@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pilih Skema Penggajian dan Periode</title>
+  <style>
+    :root{
+      --blue:#1596d6;
+      --blue2:#0b86c7;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --panel:#f3faff;
+      --line:#bfe3ff;
+      --cardLine:#cfe9ff;
+      --successBg:#bff7c9;
+      --successInk:#0f6a2c;
+      --white:#fff;
+      --shadow: 0 18px 55px rgba(2,6,23,.12);
+      --r:18px;
+      --r2:16px;
+      --btnR:999px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--ink);
+      background:#eaf4ff;
+      padding:22px;
+    }
+
+    /* ========= WRAP (modal look) ========= */
+    .wrap{
+      max-width: 900px;
+      margin: 0 auto;
+      background:var(--white);
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(2,6,23,.10);
+      overflow:hidden;
+      border:1px solid rgba(2,6,23,.06);
+      position:relative;
+    }
+
+    /* tiny red dot top-right (like screenshot corner) */
+    .corner-dot{
+      position:absolute;
+      top:-10px;
+      right:-10px;
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#ff4d4d;
+      box-shadow: 0 10px 30px rgba(255,77,77,.35);
+    }
+
+    .head{
+      padding:20px 22px 14px;
+      border-bottom:1px solid rgba(21,150,214,.18);
+    }
+
+    .headRow{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .coin{
+      width:34px;height:34px;border-radius:999px;
+      background:#ffeaa7;
+      display:grid;place-items:center;
+      box-shadow: inset 0 0 0 2px rgba(255,193,7,.18);
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .coin svg{width:18px;height:18px}
+
+    .titleWrap{flex:1}
+    .title{
+      margin:0;
+      color:#0f9bd8;
+      font-weight:900;
+      letter-spacing:-.02em;
+      font-size:18px;
+      line-height:1.15;
+    }
+    .subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-weight:600;
+      font-size:13px;
+    }
+
+    .body{
+      padding:18px 22px 20px;
+    }
+
+    .successBar{
+      background: var(--successBg);
+      color: var(--successInk);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-weight:800;
+      font-size:13px;
+      box-shadow: inset 0 0 0 1px rgba(15,106,44,.10);
+      margin-bottom:16px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid rgba(21,150,214,.14);
+      border-radius: 12px;
+      padding:18px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+    }
+
+    .card{
+      background:#fff;
+      border:1.5px solid var(--cardLine);
+      border-radius: var(--r);
+      padding:18px 18px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: var(--r);
+      pointer-events:none;
+      box-shadow: 0 0 0 1px rgba(21,150,214,.08) inset;
+    }
+
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .iconCircle{
+      width:36px;height:36px;border-radius:999px;
+      background:#e9f6ff;
+      display:grid;place-items:center;
+      box-shadow: inset 0 0 0 1px rgba(21,150,214,.18);
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .iconCircle svg{width:18px;height:18px}
+
+    .cardTitle{
+      margin:0;
+      color:#1596d6;
+      font-weight:900;
+      letter-spacing:-.02em;
+      font-size:16px;
+      line-height:1.1;
+    }
+    .cardHint{
+      margin:6px 0 0;
+      color:#8b97a6;
+      font-weight:700;
+      font-size:12.5px;
+      line-height:1.35;
+    }
+
+    .label{
+      margin:12px 0 8px;
+      font-weight:900;
+      color:#111827;
+      font-size:13px;
+    }
+
+    .selectRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      width:100%;
+      border-radius: 10px;
+      border: 1.5px solid rgba(21,150,214,.30);
+      background:#fff;
+      padding:10px 12px;
+    }
+
+    select{
+      width:100%;
+      border:0;
+      outline:none;
+      font-weight:800;
+      color:#1f2937;
+      background:transparent;
+      appearance:none;
+      font-size:13px;
+      padding-right:22px;
+    }
+
+    .chev{
+      width:18px;height:18px;opacity:.75;flex:0 0 auto;
+    }
+
+    .hr{
+      height:1px;
+      background: rgba(21,150,214,.22);
+      margin:12px 0 10px;
+    }
+
+    .meta{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      row-gap:8px;
+      column-gap:12px;
+      font-size:13px;
+      align-items:center;
+    }
+
+    .meta .k{
+      color:#2b2f36;
+      font-weight:700;
+    }
+    .meta .v{
+      color:#111827;
+      font-weight:800;
+    }
+
+    .field{
+      width:100%;
+      border-radius: 10px;
+      border: 1.5px solid rgba(21,150,214,.30);
+      background:#fff;
+      padding:11px 12px;
+      font-weight:800;
+      color:#1f2937;
+      outline:none;
+      font-size:13px;
+    }
+
+    .navRow{
+      display:flex;
+      justify-content:space-between;
+      margin-top:14px;
+      padding: 0 6px;
+      font-weight:900;
+      font-size:12px;
+    }
+    .navRow a{
+      color:#1596d6;
+      text-decoration:none;
+    }
+    .navRow a:hover{ text-decoration:underline; }
+
+    .footer{
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      padding:18px 22px 22px;
+      background:transparent;
+    }
+
+    .btn{
+      border-radius: var(--btnR);
+      border: 1.5px solid rgba(21,150,214,.65);
+      background:#fff;
+      padding:11px 22px;
+      font-weight:900;
+      cursor:pointer;
+      color:#158fce;
+      min-width:150px;
+      transition: .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 28px rgba(2,6,23,.10); }
+    .btn.primary{
+      background: var(--blue);
+      border-color: var(--blue);
+      color:#fff;
+    }
+    .btn.primary:hover{ background: var(--blue2); border-color: var(--blue2); }
+    .btn:focus,.btn:focus-visible{ outline:none; box-shadow:none; }
+
+    /* ========= FINALIZED STATE ========= */
+    .finalBadge{
+      display:none;
+      margin-left:10px;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.22);
+      color: rgba(255,255,255,.95);
+      font-weight:900;
+      font-size:11px;
+      padding:6px 10px;
+      border-radius:999px;
+      letter-spacing:.02em;
+    }
+    .is-final .finalBadge{ display:inline-flex; align-items:center; gap:6px; }
+    .is-final .successBar{
+      background: #d9f1ff;
+      color:#0b5f86;
+      box-shadow: inset 0 0 0 1px rgba(11,95,134,.10);
+    }
+    .is-final .successBar b{ color:#0b5f86; }
+    .is-final .btn.primary{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.9);
+    }
+    .is-final .field,
+    .is-final select{
+      cursor:not-allowed;
+    }
+    .is-final .field,
+    .is-final .selectRow{
+      background:#f7fbff;
+      border-color: rgba(21,150,214,.20);
+    }
+
+    /* ========= ALERT MODAL ========= */
+    .alertOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(2,6,23,.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index:9999999;
+    }
+    .alertOverlay.show{ display:flex; }
+
+    .alertBox{
+      width:min(520px, 96vw);
+      border-radius: 18px;
+      background:#fff;
+      box-shadow: 0 40px 120px rgba(0,0,0,.45);
+      border:1px solid rgba(2,6,23,.08);
+      overflow:hidden;
+    }
+
+    .alertHead{
+      padding:16px 16px 12px;
+      background: #f3faff;
+      border-bottom:1px solid rgba(21,150,214,.18);
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .warnIcon{
+      width:38px;height:38px;border-radius:12px;
+      background: rgba(255,193,7,.16);
+      border:1px solid rgba(255,193,7,.28);
+      display:grid;place-items:center;
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .warnIcon svg{ width:20px;height:20px; }
+
+    .alertTitle{
+      margin:0;
+      font-size:15px;
+      font-weight:950;
+      color:#0b6ea7;
+      letter-spacing:-.01em;
+      line-height:1.2;
+    }
+    .alertText{
+      margin:6px 0 0;
+      color:#516070;
+      font-weight:700;
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .alertBody{ padding:14px 16px 0; }
+    .alertNote{
+      margin:0;
+      padding:12px 12px;
+      border-radius:12px;
+      background: #fff7e6;
+      border:1px solid rgba(255,193,7,.28);
+      color:#7a4f00;
+      font-weight:800;
+      font-size:12.5px;
+      line-height:1.5;
+    }
+
+    .alertActions{
+      display:flex;
+      gap:10px;
+      padding:14px 16px 16px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .aBtn{
+      border-radius:999px;
+      border:1.5px solid rgba(21,150,214,.40);
+      background:#fff;
+      color:#127fb6;
+      font-weight:950;
+      padding:10px 16px;
+      cursor:pointer;
+      min-width:150px;
+      transition:.15s ease;
+    }
+    .aBtn:hover{ transform: translateY(-1px); box-shadow: 0 12px 30px rgba(2,6,23,.12); }
+    .aBtn.primary{
+      background: var(--blue);
+      border-color: var(--blue);
+      color:#fff;
+    }
+    .aBtn.primary:hover{ background: var(--blue2); border-color: var(--blue2); }
+    .aBtn:focus,.aBtn:focus-visible{ outline:none; box-shadow:none; }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 780px){
+      .grid{ grid-template-columns: 1fr; }
+      .meta{ grid-template-columns: 150px 1fr; }
+      .footer{ flex-direction:column; align-items:center; }
+      .btn{ width:min(360px, 92vw); }
+      .alertActions{ justify-content:stretch; }
+      .aBtn{ width:100%; min-width:0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="app">
+    <div class="corner-dot" aria-hidden="true"></div>
+
+    <div class="head">
+      <div class="headRow">
+        <div class="coin" aria-hidden="true">
+          <!-- coin icon -->
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3c4.97 0 9 2.69 9 6s-4.03 6-9 6-9-2.69-9-6 4.03-6 9-6Z" fill="#FBBF24" opacity=".55"/>
+            <path d="M12 4.5c4.14 0 7.5 2.08 7.5 4.5S16.14 13.5 12 13.5 4.5 11.42 4.5 9 7.86 4.5 12 4.5Z" stroke="#8A5B00" opacity=".55"/>
+            <path d="M12 7.2c1.3 0 2.35.73 2.35 1.62 0 .74-.68 1.36-1.62 1.55v.56h-1.05v-.53c-.77-.1-1.42-.43-1.76-.86l.83-.74c.22.26.63.54 1.29.54.65 0 1.05-.25 1.05-.53 0-.29-.3-.44-1.2-.62-1.1-.22-2.12-.57-2.12-1.72 0-.84.74-1.5 1.91-1.67V6.3h1.05v.52c.62.1 1.13.33 1.49.63l-.75.78c-.3-.24-.72-.43-1.47-.43Z" fill="#7A4F00"/>
+          </svg>
+        </div>
+        <div class="titleWrap">
+          <h1 class="title">Pilih Skema Penggajian dan Periode</h1>
+          <p class="subtitle">Atur skema dan periode untuk sinkronisasi data payroll</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="successBar" id="statusBar">
+        <span id="statusText">Periode valid dan siap disinkronkan.</span>
+      </div>
+
+      <div class="panel">
+        <div class="grid">
+          <!-- LEFT CARD -->
+          <div class="card">
+            <div class="cardTop">
+              <div class="iconCircle" aria-hidden="true">
+                <!-- minus in square -->
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7h10v10H7V7Z" fill="#1596d6" opacity=".14"/>
+                  <path d="M8.5 12h7" stroke="#1596d6" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="cardTitle">Skema Penggajian</h3>
+                <p class="cardHint">Pilih Skema yang Akan di sinkronkan</p>
+              </div>
+            </div>
+
+            <div class="label">Nama Skema Penggajian</div>
+            <div class="selectRow" id="schemeWrap">
+              <select id="schemeSelect">
+                <option>Oktober 25</option>
+                <option>November 25</option>
+                <option>Desember 25</option>
+              </select>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 10l5 5 5-5" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".65"/>
+              </svg>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="meta">
+              <div class="k">Tipe Periode</div><div class="v" id="mType">: Bulanan</div>
+              <div class="k">Tanggal Berlaku</div><div class="v" id="mStart">: 17 September 2025</div>
+              <div class="k">Jumlah Karyawan</div><div class="v" id="mEmp">: 14</div>
+            </div>
+          </div>
+
+          <!-- RIGHT CARD -->
+          <div class="card">
+            <div class="cardTop">
+              <div class="iconCircle" aria-hidden="true">
+                <!-- calendar -->
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 4v3M17 4v3" stroke="#1596d6" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M5 8h14" stroke="#1596d6" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6.5 6.5h11A1.5 1.5 0 0 1 19 8v10.5A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5V8A1.5 1.5 0 0 1 6.5 6.5Z" fill="#1596d6" opacity=".12"/>
+                  <path d="M8 12h3M8 15h5" stroke="#1596d6" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="cardTitle">Periode Penggajian</h3>
+                <p class="cardHint">Pilih rentang tanggal yang akan di sinkronkan.</p>
+              </div>
+            </div>
+
+            <div class="label">Periode Awal</div>
+            <input class="field" id="dateStart" type="date" value="2025-11-17"/>
+
+            <div class="label" style="margin-top:12px">Periode Akhir</div>
+            <input class="field" id="dateEnd" type="date" value="2025-11-17"/>
+          </div>
+        </div>
+
+        <div class="navRow">
+          <a href="javascript:void(0)" id="prevPeriod">Periode Sebelumnya</a>
+          <a href="javascript:void(0)" id="nextPeriod">Periode Selanjutnya</a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button class="btn" type="button" id="btnCancel">Batal</button>
+        <button class="btn primary" type="button" id="btnFinalize">
+          Finalisasi <span class="finalBadge" id="finalBadge">✓ FINAL</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alertOverlay" id="alertOverlay" aria-hidden="true">
+    <div class="alertBox" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+      <div class="alertHead">
+        <div class="warnIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3l10 18H2L12 3Z" fill="#F59E0B" opacity=".25"/>
+            <path d="M12 8v6" stroke="#7A4F00" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 17h.01" stroke="#7A4F00" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="alertTitle" id="alertTitle">Finalisasi Periode Payroll?</h3>
+          <p class="alertText">
+            Setelah Anda melakukan <b>Finalisasi</b>, periode ini <b>tidak dapat difinalisasi ulang</b> dan Anda
+            <b>tidak dapat melakukan koreksi data kehadiran</b>.
+          </p>
+        </div>
+      </div>
+
+      <div class="alertBody">
+        <p class="alertNote">
+          Pastikan data sudah benar sebelum melanjutkan.
+        </p>
+      </div>
+
+      <div class="alertActions">
+        <button class="aBtn" type="button" id="btnNotYet">Belum Yakin</button>
+        <button class="aBtn primary" type="button" id="btnSure">Sudah Yakin</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const KEY = "payroll_period_finalized_v1";
+
+      const app = document.getElementById("app");
+      const statusText = document.getElementById("statusText");
+      const btnFinalize = document.getElementById("btnFinalize");
+      const finalBadge = document.getElementById("finalBadge");
+
+      const schemeSelect = document.getElementById("schemeSelect");
+      const dateStart = document.getElementById("dateStart");
+      const dateEnd = document.getElementById("dateEnd");
+
+      const alertOverlay = document.getElementById("alertOverlay");
+      const btnSure = document.getElementById("btnSure");
+      const btnNotYet = document.getElementById("btnNotYet");
+
+      function setFinalizedUI(isFinal) {
+        if (isFinal) {
+          app.classList.add("is-final");
+          statusText.innerHTML = "<b>Periode sudah difinalisasi.</b> Tidak bisa finalisasi ulang & koreksi kehadiran.";
+          finalBadge.style.display = "inline-flex";
+
+          // lock inputs
+          schemeSelect.disabled = true;
+          dateStart.disabled = true;
+          dateEnd.disabled = true;
+
+          // disable main button
+          btnFinalize.disabled = true;
+        } else {
+          app.classList.remove("is-final");
+          statusText.textContent = "Periode valid dan siap disinkronkan.";
+          finalBadge.style.display = "none";
+
+          schemeSelect.disabled = false;
+          dateStart.disabled = false;
+          dateEnd.disabled = false;
+
+          btnFinalize.disabled = false;
+        }
+      }
+
+      function isFinalized() {
+        try { return localStorage.getItem(KEY) === "1"; } catch (e) { return false; }
+      }
+
+      function finalize() {
+        try { localStorage.setItem(KEY, "1"); } catch (e) {}
+        setFinalizedUI(true);
+      }
+
+      function openAlert() {
+        alertOverlay.classList.add("show");
+        alertOverlay.setAttribute("aria-hidden", "false");
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        btnSure.focus();
+      }
+
+      function closeAlert() {
+        alertOverlay.classList.remove("show");
+        alertOverlay.setAttribute("aria-hidden", "true");
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      }
+
+      // init
+      setFinalizedUI(isFinalized());
+
+      // Click Finalisasi
+      btnFinalize.addEventListener("click", () => {
+        if (isFinalized()) {
+          setFinalizedUI(true);
+          return;
+        }
+        openAlert();
+      });
+
+      // Alert actions
+      btnNotYet.addEventListener("click", closeAlert);
+      btnSure.addEventListener("click", () => {
+        finalize();
+        closeAlert();
+      });
+
+      // Close alert by backdrop / Esc
+      alertOverlay.addEventListener("click", (e) => {
+        if (e.target === alertOverlay) closeAlert();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && alertOverlay.classList.contains("show")) closeAlert();
+      });
+
+      // Dummy navigation handlers (optional)
+      document.getElementById("prevPeriod").addEventListener("click", () => {
+        if (isFinalized()) return;
+        // contoh perubahan tanggal
+        dateStart.value = "2025-10-17";
+        dateEnd.value = "2025-10-17";
+      });
+      document.getElementById("nextPeriod").addEventListener("click", () => {
+        if (isFinalized()) return;
+        dateStart.value = "2025-12-17";
+        dateEnd.value = "2025-12-17";
+      });
+
+      // Batal (dummy)
+      document.getElementById("btnCancel").addEventListener("click", () => {
+        closeAlert();
+        // contoh: reset pilihan (opsional)
+        // schemeSelect.value = schemeSelect.options[0].value;
+      });
+
+    })();
+  </script>
+</body>
+</html>

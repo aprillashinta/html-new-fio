@@ -1,0 +1,2240 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cart & Add-On — Fingerspot.io</title>
+
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Small helpers (still “Tailwind-first”) */
+        .no-spin::-webkit-outer-spin-button,
+        .no-spin::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .no-spin {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-slate-800 antialiased">
+    <!-- Toast -->
+    <div id="toastHost" class="fixed top-4 right-4 z-[9999] space-y-2"></div>
+
+    <!-- PAGE -->
+    <div id="cart" class="min-h-screen">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+            <div class="mb-4">
+                <p class="text-lg sm:text-xl font-semibold">Pesananmu yang ada di keranjang</p>
+            </div>
+
+            <!-- TOP GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- LEFT: CART -->
+                <div class="lg:col-span-7">
+                    <!-- EMPTY CART -->
+                    <div class="container-empty-cart rounded-xl bg-sky-50 border border-sky-100 p-6 sm:p-8 flex items-center gap-4"
+                        id="emptyCartPanel">
+                        <img class="h-12 w-12" src="https://fingerspot.io/./assets3/img/addons/new/basket.svg"
+                            alt="Basket" />
+                        <div>
+                            <div class="font-semibold">Yahh, saat ini keranjangmu kosong 😞</div>
+                            <div class="text-slate-500 mt-1 text-sm">Ayo pilih paket dan Add-on yang sesuai dengan
+                                kebutuhan kamu dibawah ini! 👇👇</div>
+                        </div>
+                    </div>
+
+                    <!-- CART HEADER (shown when cart has items) -->
+                    <div class="container-cart hidden rounded-xl overflow-hidden border-2 border-sky-600"
+                        id="cartHeader">
+                        <div class="bg-sky-600 text-white px-4 py-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <label class="flex items-center gap-2 text-sm select-none">
+                                    <input class="h-4 w-4 rounded border-white/40 text-white accent-white"
+                                        type="checkbox" id="flexCheckAll" checked onchange="checkAllItem(this);"
+                                        data-index="0" />
+                                    <span>Pilih Semua (<span class="total-count" id="totalCount">0</span>)</span>
+                                </label>
+
+                                <button id="deleteCart"
+                                    class="text-sm font-semibold underline underline-offset-2 hover:opacity-90"
+                                    onclick="resetCart(1);" type="button">
+                                    Reset Keranjang
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="warning-cart px-4 py-2 text-sm text-rose-600" id="warningCart"></div>
+
+                        <!-- Bundling 9999 (kept, optional) -->
+                        <div class="list-cart-9999 hidden px-4 pb-4" id="bundling9999Container">
+                            <div class="mt-3">
+                                <h5 class="font-semibold">Paket Bundling</h5>
+
+                                <div class="mt-2 rounded-xl border border-slate-200 bg-white p-4">
+                                    <div class="flex items-start gap-3">
+                                        <input class="hidden" checked disabled type="checkbox" id="flexCheckPackage9999"
+                                            data-index="3" />
+
+                                        <div class="shrink-0">
+                                            <img src="https://fingerspot.io/assets3/img/addons/new/device.png"
+                                                alt="Device Image" class="h-11 w-auto" />
+                                        </div>
+
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="text-sm font-semibold">
+                                                            <span id="bundling_device_title">Paket Perangkat Absensi
+                                                                (:package_bundling_name)</span>
+                                                        </div>
+                                                        <button class="text-sky-600 hover:text-sky-700" type="button"
+                                                            data-tooltip="Info bundling"
+                                                            onclick="toastr_msg('info','Bundling tidak bisa ditambah/kurangi. Hapus dengan tombol sampah.')"
+                                                            aria-label="Info">
+                                                            <!-- info icon -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                viewBox="0 0 24 24" fill="currentColor">
+                                                                <path
+                                                                    d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm.75 15h-1.5v-6h1.5v6Zm0-8h-1.5V7h1.5v2Z" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="text-xs text-sky-600 mt-1">
+                                                        Rp <span class="price-cart" id="price9999">0</span> per
+                                                        perangkat absensi
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center gap-2">
+                                                    <button onclick="delete9999()" id="recycleButtonDevice"
+                                                        class="rounded-lg border border-slate-200 bg-white p-2 hover:bg-slate-50"
+                                                        type="button" aria-label="Hapus bundling">
+                                                        <img src="https://fingerspot.io/assets3/img/recycle_bin.png"
+                                                            alt="Remove" class="h-4 w-4" />
+                                                    </button>
+
+                                                    <!-- Qty locked -->
+                                                    <button onclick="alert_plusminus_9999()"
+                                                        class="hidden rounded-lg bg-sky-50 px-3 py-2 text-sky-500"
+                                                        type="button">-</button>
+                                                    <input disabled type="number"
+                                                        class="no-spin w-14 text-center border-0 bg-white text-sm"
+                                                        value="1" />
+                                                    <button onclick="alert_plusminus_9999()"
+                                                        class="hidden rounded-lg bg-sky-50 px-3 py-2 text-sky-500"
+                                                        type="button">+</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Use poin -->
+                                            <div class="mt-3 flex items-center justify-between text-xs font-semibold">
+                                                <div>Gunakan Poin <b><i>(<span id="total_poin_9999">0</span>)</i></b>
+                                                </div>
+                                                <label class="inline-flex items-center gap-2">
+                                                    <input class="h-4 w-8 accent-sky-600" type="checkbox"
+                                                        id="cb_p_allow_use_poin_9999" onclick="usePoin9999()" />
+                                                </label>
+                                            </div>
+
+                                            <div class="mt-2 flex items-center justify-between text-xs font-semibold">
+                                                <div>Sub Total</div>
+                                                <div>Rp <span id="priceTotal9999">0</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 h-px bg-slate-200"></div>
+                            </div>
+                        </div>
+
+                        <!-- CART LIST -->
+                        <div class="list-cart px-4 pb-4" id="cartList">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: SUMMARY -->
+                <div class="lg:col-span-5">
+                    <div class="rounded-2xl border-2 border-sky-600 bg-sky-50 p-4 sm:p-5">
+                        <!-- Tabs -->
+                        <div class="grid grid-cols-2 rounded-xl bg-white border border-slate-200 overflow-hidden">
+                            <button class="tab-button px-3 py-3 text-sm font-semibold text-sky-700 bg-white"
+                                id="tabBtnPesanan" onclick="openTab(event,'Pesanan')" type="button">
+                                Ringkasan Pesananmu
+                            </button>
+                            <button
+                                class="tab-button px-3 py-3 text-sm font-semibold text-slate-500 hover:text-slate-700"
+                                id="tabBtnLayanan" onclick="openTab(event,'Layanan')" type="button">
+                                Layanan yang Anda Miliki
+                            </button>
+                        </div>
+
+                        <!-- TAB: Pesanan -->
+                        <div id="Pesanan" class="tab-content mt-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-600">Total Pesananmu</span>
+                                    <span class="totalPrice font-semibold" id="summaryTotal">Rp 0</span>
+                                </div>
+
+                                <div id="div_total_day" class="hidden text-xs text-slate-700">
+                                    Total Hari : <span id="preview_total_day">0</span> Hari
+                                    <button id="tooltip_total_day" class="hidden align-middle text-sky-600"
+                                        type="button"
+                                        onclick="toastr_msg('info','Total hari dihitung dari periode paket yang dipilih.')"
+                                        aria-label="Info total hari">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline"
+                                            viewBox="0 0 24 24" fill="currentColor">
+                                            <path
+                                                d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm.75 15h-1.5v-6h1.5v6Zm0-8h-1.5V7h1.5v2Z" />
+                                        </svg>
+                                    </button>
+                                    <br />
+                                    Jatuh Tempo : <span id="preview_due_date">2026-01-08</span>
+                                </div>
+
+                                <div class="hidden rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700 text-center"
+                                    id="detail-addon-modal-button">
+                                    <button class="font-semibold underline underline-offset-2" type="button"
+                                        onclick="showModalAddon()">
+                                        Klik disini
+                                    </button>
+                                    untuk melihat detail rincian Add-On yang Anda pilih.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Layanan -->
+                        <div id="Layanan" class="tab-content mt-4 hidden">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-center text-center text-sm text-slate-600">
+                                    <span id="empty-service">Maaf, saat ini anda tidak memiliki layanan yang
+                                        aktif</span>
+                                </div>
+
+                                <div id="upgrade-info"
+                                    class="hidden rounded-xl bg-amber-300/70 px-4 py-3 text-sm text-slate-800">
+                                    Anda telah meningkatkan layanan di masa aktif dari <strong><span
+                                            id="k4_before"></span></strong> ke <strong><span
+                                            id="k4_after"></span></strong>.
+                                    Peningkatan ini hanya menambahkan fitur dan tidak menambahkan masa aktif layanan
+                                    Anda sebelumnya.
+                                </div>
+
+                                <div class="period-info hidden">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="font-semibold" id="label-periode">Periode Langganan</span>
+                                        <span class="item-count" id="servicePeriod">0 Bulan</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="hidden font-semibold text-sm" id="label-package">Paket yang sedang aktif
+                                    </div>
+                                    <div class="package-info space-y-2" id="activePackageInfo"></div>
+                                </div>
+
+                                <div>
+                                    <div class="hidden font-semibold text-sm mt-3" id="label-addon">Add-on yang sedang
+                                        aktif</div>
+                                    <div class="addons-info space-y-2" id="activeAddonInfo"></div>
+                                </div>
+                            </div>
+
+                            <div class="hidden rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700 text-center mt-4"
+                                id="dueDateCta">
+                                <button class="font-semibold underline underline-offset-2" type="button"
+                                    onclick="showModalDueDate()">
+                                    Klik disini
+                                </button>
+                                untuk memperbarui kuota atau paket Anda untuk periode berikutnya.
+                            </div>
+                        </div>
+
+                        <div class="h-px bg-slate-200 my-4"></div>
+
+                        <p class="warning hidden justify-center text-sm text-rose-600" id="summaryWarning"></p>
+
+                        <div class="flex justify-center">
+                            <button onclick="checkout();"
+                                class="w-11/12 rounded-full bg-sky-600 text-white py-4 font-semibold hover:bg-sky-700 active:bg-sky-800 transition"
+                                type="button">
+                                <span id="btnCheckout" class="text-sm">Lanjut Pembayaran</span>
+                            </button>
+                        </div>
+
+                        <div class="text-center hidden" id="btnCancelChooseBundling">
+                            <button onclick="cancelChooseBundling();"
+                                class="mt-3 w-11/12 rounded-full bg-white text-sky-700 py-4 font-semibold border border-sky-600 hover:bg-sky-50 transition"
+                                type="button">
+                                <small>Batalkan Bundling</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PACKAGES HEADER -->
+            <div class="mt-10">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-center gap-3">
+                            <div class="text-xl font-semibold text-slate-800">Paket Perangkat Absensi Spesial Untuk Anda
+                            </div>
+                            <div class="hidden sm:block h-[2px] flex-1 bg-sky-600"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="leftButton2"
+                            class="h-9 w-9 rounded-full bg-slate-300 hover:bg-slate-400 text-white flex items-center justify-center transition"
+                            type="button" aria-label="Scroll left">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 translate-x-[-1px]"
+                                viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15.75 19.5 8.25 12l7.5-7.5" stroke="currentColor" stroke-width="2" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <button id="rightButton2"
+                            class="h-9 w-9 rounded-full bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center transition"
+                            type="button" aria-label="Scroll right">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 translate-x-[1px]"
+                                viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8.25 4.5 15.75 12l-7.5 7.5" stroke="currentColor" stroke-width="2" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PACKAGE LIST -->
+            <div class="mt-4">
+                <div class="hidden rounded-xl bg-sky-50 border border-sky-100 p-6 sm:p-8 items-center gap-4"
+                    id="maximum-package">
+                    <img class="h-10 w-auto" src="https://fingerspot.io/./assets3/img/pricing/order_baru.svg"
+                        alt="Order" />
+                    <div class="flex-1 text-center">
+                        <div class="font-semibold">"Selamat! Anda telah memilih Paket Supreme, Pilihan Terbaik Kami"
+                            🤩😍</div>
+                        <div class="text-slate-500 mt-1 text-sm">
+                            Paket ini sudah mencakup semua fitur maksimal yang tersedia. Yuk, lanjutkan proses
+                            registrasi akun anda untuk segera menikmati layanan premium kami!
+                        </div>
+                    </div>
+                    <img class="h-10 w-auto scale-x-[-1]"
+                        src="https://fingerspot.io/./assets3/img/pricing/order_baru.svg" alt="Order" />
+                </div>
+
+                <div class="hidden mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+                    id="packageAlert" role="alert">
+                    Periode paket yang dipilih berbeda!;
+                </div>
+
+                <div class="mt-4">
+                    <div class="relative">
+                        <div class="flex gap-4 overflow-x-auto scroll-smooth pb-2" id="listWrapper2"
+                            aria-label="Daftar paket">
+                            <!-- Cards rendered by JS to keep them consistent & clean -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRICING PERIOD (kept, optional) -->
+            <div class="mt-6 hidden" id="pricing-heads">
+                <div
+                    class="mx-auto w-fit rounded-xl border border-sky-600 bg-white p-2 flex flex-wrap items-center gap-2">
+                    <label class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input class="accent-sky-600" type="radio" name="periode_selected" id="2monthly-input" value="2"
+                            onclick="updateAllPriceItem(2)">
+                        <span class="text-sm font-semibold">2 bulan</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input class="accent-sky-600" type="radio" name="periode_selected" id="6monthly-input" value="6"
+                            onclick="updateAllPriceItem(6)">
+                        <span class="text-sm font-semibold">6 bulan</span>
+                        <span
+                            class="ml-1 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700">-10%</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                        <input class="accent-sky-600" type="radio" name="periode_selected" id="yearly-input" value="12"
+                            onclick="updateAllPriceItem(12)">
+                        <span class="text-sm font-semibold">12 bulan</span>
+                        <span
+                            class="ml-1 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700">-15%</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ADDONS -->
+            <div class="mt-8 addons" id="addons">
+                <!-- Accordion: Karyawan -->
+                <div class="mb-4 rounded-2xl border border-slate-200 overflow-hidden" id="accordionProstaff">
+                    <button class="w-full flex items-center gap-3 bg-white px-4 py-4 text-left"
+                        onclick="toggleAccordion('collapseProstaff','toogle-prostaff')" type="button">
+                        <span class="font-semibold">Add-On Karyawan</span>
+                        <span class="hidden sm:block flex-1 h-[2px] bg-sky-600/60"></span>
+                        <svg id="toogle-prostaff" class="h-5 w-5 text-slate-500 transition"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.75 14.25 12 9l5.25 5.25" />
+                        </svg>
+                    </button>
+                    <div id="collapseProstaff" class="bg-white px-4 pb-4">
+                        <div id="prostaffContainer" class="m-0">
+                            <div id="prostaff" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion: Device add-ons -->
+                <div class="mb-4 rounded-2xl border border-slate-200 overflow-hidden" id="accordionDevicesAddon">
+                    <button class="w-full flex items-center gap-3 bg-white px-4 py-4 text-left"
+                        onclick="toggleAccordion('collapseDeviceAddon','toogle-device')" type="button">
+                        <span class="font-semibold">Add-On Perangkat Absensi Online</span>
+                        <span class="hidden sm:block flex-1 h-[2px] bg-sky-600/60"></span>
+                        <svg id="toogle-device" class="h-5 w-5 text-slate-500 transition rotate-180"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.75 14.25 12 9l5.25 5.25" />
+                        </svg>
+                    </button>
+                    <div id="collapseDeviceAddon" class="hidden bg-white px-4 pb-4">
+                        <div id="deviceAddons" class="m-0">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="deviceAddonList">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion: App add-ons -->
+                <div class="mb-4 rounded-2xl border border-slate-200 overflow-hidden" id="accordionAppAddon">
+                    <button class="w-full flex items-center gap-3 bg-white px-4 py-4 text-left"
+                        onclick="toggleAccordion('collapseAppAddon','toogle-app')" type="button">
+                        <span class="font-semibold">Add-On Aplikasi Ponsel</span>
+                        <span class="hidden sm:block flex-1 h-[2px] bg-sky-600/60"></span>
+                        <svg id="toogle-app" class="h-5 w-5 text-slate-500 transition rotate-180"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.75 14.25 12 9l5.25 5.25" />
+                        </svg>
+                    </button>
+                    <div id="collapseAppAddon" class="hidden bg-white px-4 pb-4">
+                        <div id="appAddons" class="m-0">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="appAddonList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========= KEEP: detail_purchase (invoice) — still present ========= -->
+            <div id="detail_purchase" class="hidden mt-10 text-sm">
+                <div class="w-full bg-transparent">
+                    <div class="text-center mb-6">
+                        <img alt="Fingerspot.io" src="https://fingerspot.io/assets3/img/new_logo/logo_text_grey.png"
+                            class="mx-auto w-48" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base mb-4">
+                        <div>
+                            <div class="flex gap-2"><span class="font-bold w-28">Nama</span><span>:</span><span>CV Angin
+                                    Malam</span></div>
+                            <div class="flex gap-2"><span
+                                    class="font-bold w-28">Alamat</span><span>:</span><span>Yogyakarta</span></div>
+                        </div>
+                        <div>
+                            <div class="flex gap-2 md:justify-end"><span
+                                    class="font-bold w-28">Tanggal</span><span>:</span><span>08 Jan 2026</span></div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-sm">
+                            <thead class="bg-sky-600 text-white">
+                                <tr>
+                                    <th class="px-4 py-3 text-left w-[60%]">Deskripsi</th>
+                                    <th class="px-4 py-3 text-center w-[10%]">Qty</th>
+                                    <th class="px-4 py-3 text-center w-[15%]">@ Harga</th>
+                                    <th class="px-4 py-3 text-right w-[15%]">Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table_items" class="bg-white"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totals area (kept ids) -->
+                    <div class="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-4">
+                        <div class="lg:col-span-3 rounded-xl border border-slate-200 p-4">
+                            <div class="font-semibold mb-2">Keterangan</div>
+
+                            <div class="space-y-2">
+                                <div id="label_kode_referensi_row" class="flex items-start gap-2">
+                                    <div class="w-40 font-medium">Kode Referensi</div>
+                                    <div>:</div>
+                                    <div class="flex-1">
+                                        <div id="label_kode_referensi" class="flex items-center gap-2">
+                                            <span>Fingerspot Yogyakarta</span>
+                                            <button type="button" class="text-sky-600"
+                                                onclick="document.getElementById('code_referensi').classList.remove('hidden');document.getElementById('label_kode_referensi').classList.add('hidden')">
+                                                ✎
+                                            </button>
+                                        </div>
+                                        <input type="text" name="code_referensi" id="code_referensi"
+                                            class="hidden mt-1 w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                            onchange="check_code_referensi();" value="" />
+                                        <div class="text-xs text-rose-600" id="message_code_referensi"></div>
+                                        <input type="hidden" id="code_referensi_total" value="0" />
+                                    </div>
+                                </div>
+
+                                <div id="tr_kode_voucher" class="hidden flex items-start gap-2">
+                                    <div class="w-40 font-medium">Kode Promo</div>
+                                    <div>:</div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" name="kode_voucher" id="kode_voucher"
+                                                class="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                                onchange="check_code_voucher()" />
+                                            <button id="label_kode_voucher" class="hidden text-rose-600" type="button"
+                                                onclick="clear_kode_voucher()">🗑</button>
+                                        </div>
+                                        <div class="text-xs text-rose-600" id="message_kode_voucher"></div>
+                                        <input type="hidden" id="kode_voucher_total" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <div class="w-40 font-medium">Total Hari</div>
+                                    <div>:</div>
+                                    <div class="flex-1" id="container_total_day"></div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-40 font-medium">Jatuh Tempo</div>
+                                    <div>:</div>
+                                    <div class="flex-1" id="container_due_date"></div>
+                                </div>
+
+                                <div class="hidden tr_k_condition" id="tr_k_condition1">Catatan: Berikut adalah invoice
+                                    untuk akun baru layanan fingerspot.io.</div>
+                                <div class="hidden tr_k_condition" id="tr_k_condition2">Catatan: Berikut ini adalah
+                                    invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa
+                                    jatuh tempo.</div>
+                                <div class="hidden tr_k_condition" id="tr_k_condition3">Catatan: Berikut ini adalah
+                                    invoice untuk akun yang telah melakukan perpanjangan layanan.</div>
+                                <div class="hidden tr_k_condition" id="tr_k_condition4">
+                                    Catatan: <span id="div_k4_desc">Berikut ini invoice untuk akun peningkatan
+                                        layanan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 rounded-xl border border-slate-200 p-4">
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between font-semibold" id="tr_subtotal">
+                                    <div>SUBTOTAL</div>
+                                    <div id="contprice_subtotal"></div>
+                                </div>
+                                <div class="hidden flex justify-between" id="container_diskon">
+                                    <div>Diskon</div>
+                                    <div id="contprice_discount"></div>
+                                </div>
+                                <div class="flex justify-between" id="tr_dpp">
+                                    <div>DPP</div>
+                                    <div id="contprice_dpp"></div>
+                                </div>
+                                <div class="flex justify-between" id="tr_ppn">
+                                    <div>PPn <span id="ppn_rate"></span></div>
+                                    <div id="contprice_ppn"></div>
+                                </div>
+
+                                <div class="h-px bg-slate-200 my-3"></div>
+
+                                <div class="flex justify-between font-semibold">
+                                    <div>TOTAL TAGIHAN</div>
+                                    <div id="contprice_total_billing"></div>
+                                </div>
+                                <div class="hidden flex justify-between" id="tr_contprice_admin_pay">
+                                    <div>Biaya Transaksi</div>
+                                    <div id="contprice_admin_pay"></div>
+                                </div>
+                                <div class="flex justify-between" id="tr_topup_balance">
+                                    <div>Dibayar saldo fingerspot.io</div>
+                                    <div id="contprice_topup_balance_total"></div>
+                                </div>
+                                <div class="flex justify-between" id="tr_poin_balance">
+                                    <div>Dibayar poin fingerspot.io</div>
+                                    <div id="contprice_poin_balance_total"></div>
+                                </div>
+                                <div class="flex justify-between font-bold" id="tr_total_pay">
+                                    <div>TAGIHAN YANG PERLU DIBAYAR</div>
+                                    <div id="contprice_total_pay"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex justify-end gap-2">
+                                <button
+                                    class="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold hover:bg-slate-300"
+                                    type="button" onclick="back()">Kembali</button>
+                                <button
+                                    class="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+                                    type="button" onclick="order()">Order Sekarang</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Choice PPH, Bank selection kept -->
+                    <div class="mt-8 rounded-xl border border-slate-200 p-4">
+                        <div id="container_choice_pph" class="block">
+                            <div class="font-semibold">Faktur Pajak</div>
+                            <div class="text-sm text-slate-600 mt-1">
+                                Seluruh transaksi di fingerspot.io sudah termasuk PPN, apakah Anda membutuhkan Faktur
+                                Pajak untuk tagihan ini ?
+                            </div>
+                            <div class="mt-3 space-y-2 text-sm">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="abcd" id="fake_pph_1" checked
+                                        onclick="check_show_modal_pph(1)" class="accent-sky-600" />
+                                    <span>Tidak</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="abcd" id="fake_pph_2" onclick="check_show_modal_pph(2)"
+                                        class="accent-sky-600" />
+                                    <span>Ya</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="container_bank" class="mt-6">
+                            <div class="font-semibold">Virtual Account</div>
+
+                            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <label
+                                    class="rounded-xl border border-slate-200 bg-white p-4 text-center cursor-pointer hover:bg-slate-50">
+                                    <img alt="" src="https://fingerspot.io/assets/img/bank/new/bca.png"
+                                        class="h-7 mx-auto" />
+                                    <div class="mt-3">
+                                        <input type="radio" name="bank_" value="1" checked onclick="update_admin_pay(1)"
+                                            class="accent-sky-600" />
+                                    </div>
+                                </label>
+                                <label
+                                    class="rounded-xl border border-slate-200 bg-white p-4 text-center cursor-pointer hover:bg-slate-50">
+                                    <img alt="" src="https://fingerspot.io/assets/img/bank/new/bank_16.png"
+                                        class="h-7 mx-auto" />
+                                    <div class="mt-3">
+                                        <input type="radio" name="bank_" value="16" onclick="update_admin_pay(16)"
+                                            class="accent-sky-600" />
+                                    </div>
+                                </label>
+                                <label
+                                    class="rounded-xl border border-slate-200 bg-white p-4 text-center cursor-pointer hover:bg-slate-50">
+                                    <img alt="" src="https://fingerspot.io/assets/img/bank/new/bank_17.png"
+                                        class="h-7 mx-auto" />
+                                    <div class="mt-3">
+                                        <input type="radio" name="bank_" value="17" onclick="update_admin_pay(17)"
+                                            class="accent-sky-600" />
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="mt-4 text-sm text-slate-600 list-disc pl-5 space-y-1">
+                                <div class="list-item">Periksa kembali data pembayaran Anda sebelum melanjutkan
+                                    transaksi.</div>
+                                <div class="list-item">Anda akan mendapatkan kode pembayaran Virtual Account yang akan
+                                    digunakan untuk membayar transaksi ini di berbagai channel pembayaran.</div>
+                            </div>
+
+                            <div class="mt-6 font-semibold">E-Wallet</div>
+                            <label
+                                class="mt-3 block rounded-xl border border-slate-200 bg-white p-4 text-center cursor-pointer hover:bg-slate-50">
+                                <img alt="" src="https://fingerspot.io/assets/img/bank/new/qris.jpg"
+                                    class="h-28 mx-auto object-contain" />
+                                <div class="mt-3">
+                                    <input type="radio" name="bank_" value="11" onclick="update_admin_pay(11)"
+                                        class="accent-sky-600" />
+                                </div>
+                                <div class="text-sm text-slate-600 mt-2">Pembayaran menggunakan QRIS</div>
+                            </label>
+
+                            <div class="mt-4 text-sm text-slate-600 list-disc pl-5 space-y-1">
+                                <div class="list-item">Segera membayar tagihan dan lakukan konfirmasi, karena jika sudah
+                                    jatuh tempo maka data tidak dapat diolah dan beberapa fitur tidak dapat digunakan.
+                                </div>
+                                <div class="list-item">Biaya diatas belum termasuk biaya admin.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ========= END detail_purchase ========= -->
+        </div>
+    </div>
+
+    <!-- ===================== MODALS (Tailwind) ===================== -->
+
+    <!-- Generic modal overlay -->
+    <div id="modalOverlay" class="fixed inset-0 z-[9998] hidden">
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+
+    <!-- Modal: Confirmation change package -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="modal_confirmation">
+        <div class="w-full max-w-2xl rounded-2xl bg-white shadow-xl border border-slate-200">
+            <div class="p-6">
+                <p class="text-center text-sm font-semibold">
+                    Apakah Anda akan mengganti paket perangkat absensi Anda?<br />
+                    Apabila Anda mengganti paket Anda, maka paket akan tergantikan sesuai dengan pilihan terakhir paket
+                    perangkat absensi yang Anda pilih.
+                </p>
+                <div class="mt-6 flex justify-center gap-3">
+                    <button onclick="changePackage(this)" id="changePackageButton"
+                        class="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700">
+                        Oke, ganti
+                    </button>
+                    <button onclick="closeModal('modal_confirmation')"
+                        class="rounded-xl border border-sky-600 px-6 py-3 text-sm font-semibold text-sky-700 hover:bg-sky-50">
+                        Batalkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Compare -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="modal_compare">
+        <div class="w-full max-w-6xl rounded-2xl bg-sky-50 shadow-xl border border-slate-200 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+                <div class="font-semibold text-sky-700">Bandingkan Paket</div>
+                <button class="rounded-lg p-2 hover:bg-slate-100" type="button" onclick="closeModal('modal_compare')"
+                    aria-label="Close">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-x-auto">
+                <table class="min-w-[900px] w-full text-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-left text-sky-700 font-semibold p-3">Informasi paket</th>
+                            <th class="text-center text-sky-700 font-semibold p-3 w-[25%]">Paket yang dipilih</th>
+                            <th class="text-center text-sky-700 font-semibold p-3 w-[25%]">Paket yang dibandingkan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compareBody" class="bg-white rounded-xl overflow-hidden"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detail Addon -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="detail_addon_modal">
+        <div class="w-full max-w-6xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <div class="font-semibold text-sky-700">“Rincian Add-On yang akan Anda dapatkan”</div>
+                <button class="rounded-lg p-2 hover:bg-slate-100" type="button"
+                    onclick="closeModal('detail_addon_modal')">✕</button>
+            </div>
+
+            <div class="p-4 sm:p-6">
+                <div class="text-sm text-slate-600 mb-4">
+                    Berikut adalah rincian Add-On yang akan Anda dapatkan sesuai dengan paket atau Add-On yang Anda
+                    pilih pada menu keranjang.
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-sm">
+                        <thead id="detail-addon-header" class="bg-slate-100"></thead>
+                        <tbody id="detail-addon-body" class="bg-white"></tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 rounded-xl bg-amber-100 px-4 py-3 text-sm text-amber-900" id="detail-addon-free">
+                    <div id="detail-addon-free-package">* Bonus layanan lainnya</div>
+                    <div id="detail-addon-free-addon">** Tambahan kuota dari add-on absensi gps per karyawan</div>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 border-t border-slate-200 flex justify-end">
+                <button type="button" onclick="closeModal('detail_addon_modal')"
+                    class="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700">
+                    Ok, Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add quota warn -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="add_quota_warn">
+        <div class="w-full max-w-3xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-6 flex items-start gap-4">
+                <div class="h-10 w-10 rounded-full bg-sky-600 flex items-center justify-center text-white shrink-0">!
+                </div>
+                <div class="min-w-0">
+                    <div class="font-semibold">Perhatian!</div>
+                    <div class="text-sm text-slate-600">Harap perhatikan informasi berikut sebelum melanjutkan.</div>
+                </div>
+            </div>
+
+            <div class="px-6 pb-6">
+                <div class="rounded-xl bg-slate-100 p-4">
+                    <p class="text-sm mb-2">Kuota perangkat hanya dapat digunakan untuk:</p>
+                    <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                        <li>Unit yang benar-benar baru dan belum pernah didaftarkan pada akun mana pun sebelumnya.</li>
+                        <li>Pastikan perangkat Anda belum pernah terhubung atau terdaftar di akun lain sebelum
+                            melanjutkan pembelian.</li>
+                    </ul>
+                </div>
+
+                <div class="mt-5 flex justify-end">
+                    <button class="rounded-xl bg-sky-600 px-10 py-3 text-sm font-semibold text-white hover:bg-sky-700"
+                        type="button" onclick="btnAddDeviceQuotaWarn()">
+                        Selanjutnya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Image preview -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="imageModal">
+        <div class="w-full max-w-6xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 flex justify-end">
+                <button class="rounded-lg p-2 hover:bg-slate-100" type="button"
+                    onclick="closeModal('imageModal')">✕</button>
+            </div>
+            <div class="p-6">
+                <img id="imagePreview" src="https://fingerspot.io/assets3/img/new_logo/qr_center_image.png" alt="Gambar"
+                    class="w-full h-auto rounded-xl border border-slate-200" />
+            </div>
+            <div class="px-6 py-4 border-t border-slate-200 flex justify-end gap-2">
+                <button
+                    class="rounded-full border border-slate-300 px-6 py-2 text-sm font-semibold text-sky-700 hover:bg-slate-50"
+                    type="button" onclick="closeModal('imageModal')">
+                    Ok, Kembali
+                </button>
+                <button id="downloadButton" onclick="cart();"
+                    class="rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+                    type="button">
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Topup balance new (kept) -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="modal_topup_balance_new">
+        <div class="w-full max-w-3xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200">
+                <div class="font-semibold">Saldo Fingerspot.io</div>
+                <div class="text-sm text-slate-600 mt-1">Anda dapat menggunakan saldo fingerspot.io Anda untuk
+                    pembayaran transaksi ini.</div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="rounded-xl border border-slate-200 bg-white p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="h-8 w-8 rounded-full bg-sky-600 flex items-center justify-center">
+                                <img src="https://fingerspot.io/assets3/img/solar_wallet-money-bold.png" alt=""
+                                    class="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold">Saldo fingerspot.io (Rp <span
+                                        id="topupBalanceLabel">0</span>)</div>
+                                <div id="label_insufficient_balance" class="hidden text-xs text-slate-500">yaah, saldomu
+                                    kurang.</div>
+                            </div>
+                        </div>
+
+                        <label class="inline-flex items-center gap-2">
+                            <input class="accent-sky-600" type="checkbox" id="checkbox_use_topup_v2"
+                                onclick="check_use_topup_balance_v2()" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="hidden rounded-xl bg-slate-100 p-4 text-sm" id="div_formula">
+                    <div class="flex justify-between">
+                        <div>Total biaya layanan</div>
+                        <div id="div_total_price">Rp 0</div>
+                    </div>
+                    <div class="flex justify-between">
+                        <div>Dibayar menggunakan saldo fingerspot.io</div>
+                        <div id="div_paid_topup">Rp 0</div>
+                    </div>
+                    <div class="flex justify-between border-t border-slate-400/40 pt-2 mt-2">
+                        <div>Sisa yang harus dibayar</div>
+                        <div id="div_insufficient">Rp 0</div>
+                    </div>
+                    <div class="mt-3 hidden text-xs text-slate-600" id="div_insufficient_desc">
+                        Silahkan bayar kekurangan bayar senilai rincian diatas dengan menunjukkan kode bayar saldo
+                        dibawah ini ke kantor layanan terdekat.
+                    </div>
+                </div>
+
+                <div class="hidden" id="div_sementara">
+                    <div class="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
+                        Maaf, saldo Fingerspot.io Anda tidak cukup. Silakan top up saldo terlebih dahulu.
+                    </div>
+                </div>
+
+                <div class="hidden" id="div_topup_code">
+                    <div class="text-sm font-semibold mb-2">Kode Bayar Saldo</div>
+                    <div class="rounded-xl bg-sky-50 border border-sky-200 p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="https://fingerspot.io/assets3/img/solar_ticket-bold-duotone.png" alt=""
+                                class="h-6 w-6" />
+                            <div class="text-sm" id="company_topup_code">Vje-8jV-rzO</div>
+                        </div>
+                        <button type="button" class="rounded-lg bg-white border border-slate-200 p-2 hover:bg-slate-50"
+                            onclick="copy_company_topup_code()" aria-label="Salin">
+                            <img src="https://fingerspot.io/assets3/img/solar_copy-bold.png" alt="copy"
+                                class="h-6 w-6" />
+                        </button>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-600">
+                        Atau non aktifkan metode pembayaran saldo fingerspot.io kemudian klik tombol Lanjut Pembayaran
+                        untuk pilih metode pembayaran lainnya.
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-200 flex items-center justify-between">
+                <div>
+                    <div class="text-xs text-slate-600">Total Tagihan</div>
+                    <div class="text-lg font-semibold" id="topup_modal_total_pay">Rp 0</div>
+                </div>
+                <button type="button" id="topup_modal_button_next"
+                    onclick="closeModal('modal_topup_balance_new'); get_k_condition();"
+                    class="rounded-xl bg-sky-600 px-8 py-3 text-sm font-semibold text-white hover:bg-sky-700">
+                    Lanjut Pembayaran
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: confirmpph (kept ids) -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="confirmpph">
+        <div class="w-full max-w-2xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200">
+                <div class="font-semibold">Membutuhkan EFaktur</div>
+            </div>
+
+            <form id="form_faktur_pph">
+                <div class="p-6 space-y-4">
+                    <input type="hidden" name="faktur_pph" id="faktur_pph_real" value="1" />
+
+                    <div id="container_upload_npwp" class="space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold">Silahkan unggah file foto NPWP atau KTP</label>
+                            <input class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" id="npwp"
+                                name="npwp" type="file" />
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold">Jenis Identitas</label>
+                                <select class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                    id="identity_type" name="identity_type">
+                                    <option value="1">NPWP</option>
+                                    <option value="0">KTP</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold">Nomor</label>
+                                <input type="text"
+                                    class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                    id="identity_nomor" name="identity_nomor" />
+                            </div>
+                        </div>
+
+                        <div class="hidden">
+                            <label class="text-sm font-semibold">Nama</label>
+                            <input type="text" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                id="identity_name" name="identity_name" />
+                        </div>
+
+                        <div class="h-px bg-slate-200"></div>
+
+                        <div>
+                            <div class="text-sm font-semibold mb-2">Kontak untuk Faktur Pajak</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                    id="npwp_name" name="npwp_name" placeholder="Nama" type="text"
+                                    value="CV Angin Malam" />
+                                <input class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                    id="npwp_phone" name="npwp_phone" placeholder="No. Ponsel" type="text"
+                                    value="+6287877948270" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold">Alamat pengiriman Faktur Pajak</label>
+                            <textarea class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                id="address_facture" name="address_facture" style="height: 155px;">Yogyakarta</textarea>
+                        </div>
+
+                        <label class="flex items-start gap-2 text-sm cursor-pointer">
+                            <input class="mt-1 accent-sky-600" type="checkbox" name="confirm_pph" id="confirm_pph" />
+                            <span>Saya telah menyetujui faktur pajak dibuat sesuai dengan NPWP / KTP yang sudah saya
+                                kirim. Segala kesalahan menjadi tanggung jawab saya, dan diluar tanggung jawab PT. Era
+                                Lintas Teknologi.</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <div class="p-6 border-t border-slate-200 flex justify-end gap-2" id="button_action">
+                <input type="hidden" id="selected_" value="0" />
+                <button class="rounded-xl bg-slate-200 px-6 py-3 text-sm font-semibold hover:bg-slate-300" type="button"
+                    onclick="uncheck_confirm_pph()">Batal</button>
+                <button class="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700"
+                    type="button" onclick="check_input_pph()">Lanjut</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: temp_cart_modal (kept, simplified) -->
+    <div class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" id="temp_cart_modal">
+        <div class="w-full max-w-6xl rounded-2xl bg-white shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+                <div class="font-semibold text-sky-700">Perbarui Layanan Aktif Untuk Periode Berikutnya!</div>
+                <button class="rounded-lg p-2 hover:bg-slate-100" type="button"
+                    onclick="closeModal('temp_cart_modal')">✕</button>
+            </div>
+
+            <div class="p-6">
+                <div class="text-sm text-slate-600 mb-4">
+                    Anda dapat memperbaruhi jumlah kuota pada Add-On atau paket yang Anda miliki. Setelah anda
+                    memperbaruhi dan menyimpan data maka kuota pada periode selanjutnya akan sesuai dengan perubahan
+                    terakhir yang Anda simpan.
+                </div>
+
+                <div class="rounded-xl bg-amber-300/70 px-4 py-3 text-sm mb-4" id="alertPackage3">
+                    <div>Saat ini anda berlangganan paket 2 bulan, upgrade paket anda dibawah ini untuk dapat
+                        memperbarui layanan aktif anda</div>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="min-w-[900px] w-full text-sm">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Paket yang Aktif</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Kuota Anda saat ini</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Kuota yang akan diperbaharui</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Subtotal Harga</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="container-temp-cart" id="container-temp-cart"></tbody>
+                        <thead class="bg-slate-100 head-temp-cart-addon">
+                            <tr>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Add-On yang Aktif</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Kuota Anda saat ini</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Kuota yang akan diperbaharui</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Subtotal Harga</th>
+                                <th class="p-3 text-center text-sky-700 font-semibold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="container-temp-cart-addon" id="container-temp-cart-addon"></tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 flex items-center gap-2">
+                    <input type="checkbox" id="auto-pay" class="accent-sky-600" />
+                    <label class="text-sm">
+                        Otomatis Perpanjang Layanan
+                        <button class="text-sky-600" type="button"
+                            onclick="toastr_msg('info','Jika layanan jatuh tempo dan saldo cukup, sistem dapat memperpanjang otomatis.')"
+                            aria-label="Info autopay">ⓘ</button>
+                    </label>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        class="rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white hover:bg-rose-600"
+                        type="button" onclick="resetTempAll()">Reset</button>
+                    <button
+                        class="rounded-full bg-slate-100 px-6 py-3 text-sm font-semibold text-sky-700 hover:bg-slate-200"
+                        type="button" onclick="closeModalDueDate()">Batalkan</button>
+                    <button class="rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700"
+                        type="button" onclick="saveTempCart()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading (kept id) -->
+    <div id="loading" class="hidden text-center py-16">
+        <img alt="" src="https://fingerspot.io/assets/img/loading.gif" class="mx-auto" />
+    </div>
+
+    <!-- ===================== Hidden addon descriptions (KEPT as-is) ===================== -->
+    <div class="hidden" id="addon_name_50">Kuota Karyawan di Data link - API</div>
+    <div class="hidden" id="addon_info_50">Informasi singkat untuk Add-On Data link - API</div>
+    <div class="hidden" id="addon_modal_desc_50">Manfaatkan DataLink API untuk sistem HR atau Internal Anda. DataLink
+        API ini menyediakan akses ke data karyawan, jadwal kerja, izin/cuti, lembur, maupun absensi perangkat dan GPS
+        yang tersimpan di cloud Fingerspot.io, sehingga dapat langsung ditarik dan diproses oleh aplikasi Anda.
+        <br><br>Pemakaian Datalink API mengikuti jumlah kuota add-on karyawan Datalink yang Anda beli pada layanan
+        Fingerspot.io.</div>
+
+    <div class="hidden" id="addon_name_46">Kuota Karyawan</div>
+    <div class="hidden" id="addon_info_46">Informasi singkat untuk Add-On Kuota Karyawan</div>
+    <div class="hidden" id="addon_modal_desc_46">Add-On ini digunakan untuk menambah kuota karyawan di akun perusahaan
+        Anda. <br><br>Silakan tambahkan kuota karyawan jika jumlah karyawan Anda melebihi dari kuota karyawan yang
+        tersedia pada fitur tambahan di dalam paket layanan fingerspot.io yang Anda pilih.</div>
+
+    <div class="hidden" id="addon_name_51">Kuota Karyawan di Wage Connect</div>
+    <div class="hidden" id="addon_info_51">Informasi singkat untuk Add-On Wage Connect</div>
+    <div class="hidden" id="addon_modal_desc_51"></div>
+
+    <div class="hidden" id="addon_name_38">Absensi GPS via Ponsel</div>
+    <div class="hidden" id="addon_info_38">Informasi singkat untuk Add-On Absensi GPS via Ponsel</div>
+    <div class="hidden" id="addon_modal_desc_38">Add-On ini digunakan untuk menambahkan kuota absensi GPS karyawan di
+        app fingerspot.io. Silahkan menambahkan kuota apabila karyawan Anda dapat melakukan Absensi GPS via ponsel di
+        app fingerspot.io.<br><br> Add-On ini mendapatkan :<br> - Absensi GPS Via Ponsel<br> - 10x Kuota Absensi GPS
+        Perhari (Tidak Terakumulasi)<br> - My SPOT<br> - Menambah Jumlah Kuota Karyawan</div>
+
+    <div class="hidden" id="addon_name_44">Push Server - Perangkat Absensi</div>
+    <div class="hidden" id="addon_info_44">Informasi singkat untuk Add-On Push Server - Perangkat Absensi</div>
+    <div class="hidden" id="addon_modal_desc_44">
+        <table>
+            <tr>
+                <td style="vertical-align:top;padding-right:5px;">✅</td>
+                <td>Fitur ini merupakan codeless & serverless system. Anda dapat mengirimkan data absensi karyawan dari
+                    perangkat absensi yang terhubung dengan fingerspot.io ke aplikasi bisnis Anda tanpa harus melakukan
+                    coding.</td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;padding-right:5px;">✅</td>
+                <td>Data absensi karyawan dari perangkat absensi akan disinkornkan secara realtime ke aplikasi Anda.
+                    Mendukung database MySQL dan SQL Server.</td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;padding-right:5px;">✅</td>
+                <td>Add-on ini dihitung berdasarkan jumlah kuota perangkat absensi di akun fingerspot.io Anda.</td>
+            </tr>
+        </table>
+        <br>
+    </div>
+
+    <div class="hidden" id="addon_name_45">API SDK - Perangkat Absensi</div>
+    <div class="hidden" id="addon_info_45">Informasi singkat untuk Add-On API SDK - Perangkat Absensi</div>
+    <div class="hidden" id="addon_modal_desc_45">
+        <table>
+            <tr>
+                <td style="vertical-align:top;padding-right:5px;">✅</td>
+                <td>Tetap dapat digunakan meskipun perusahaan Anda sudah memiliki sistem HR dan penggajian sendiri.
+                    Dapatkan data kehadiran karyawan dari perangkat absensi melalui API fingerspot.io.</td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;padding-right:5px;">✅</td>
+                <td>Add-On ini dihitung berdasarkan kuota perangkat absensi pada layanan fingerspot.io Anda.</td>
+            </tr>
+        </table>
+        <br>
+    </div>
+
+    <div class="hidden" id="addon_name_40">Aplikasi Mobile Owner</div>
+    <div class="hidden" id="addon_info_40">Informasi singkat untuk Add-On Aplikasi Mobile Owner</div>
+    <div class="hidden" id="addon_modal_desc_40">Dilengkapi dengan aplikasi untuk ponsel yaitu App fingerspot.io khusus
+        untuk owner yang telah tersedia di Google Play Store dan AppStore.</div>
+
+    <div class="hidden" id="addon_name_39">Terima Notifikasi Kehadiran</div>
+    <div class="hidden" id="addon_info_39">Informasi singkat untuk Add-On Terima Notifikasi Kehadiran</div>
+    <div class="hidden" id="addon_modal_desc_39">Terima notifikasi bukti absensi kehadiran secara realtime di ponsel.
+        Add-On ini dihitung berdasarkan kuota pengguna app pada layanan fingerspot.io Anda.</div>
+
+    <div class="hidden" id="addon_name_41">Pengajuan Izin & Cuti via ponsel</div>
+    <div class="hidden" id="addon_info_41">Informasi singkat untuk Add-On Pengajuan Izin & Cuti via ponsel</div>
+    <div class="hidden" id="addon_modal_desc_41">Pengajuan izin dan cuti dilakukan secara paperless melalui aplikasi
+        mobile. Add-On ini dihitung berdasarkan kuota pengguna app pada layanan fingerspot.io Anda.</div>
+
+    <div class="hidden" id="addon_name_26">Pengajuan Lembur via Ponsel</div>
+    <div class="hidden" id="addon_info_26">Informasi singkat untuk Add-On Pengajuan Lembur via Ponsel</div>
+    <div class="hidden" id="addon_modal_desc_26">Kelola proses pengajuan dan persetujuan lembur karyawan via ponsel.
+    </div>
+
+    <div class="hidden" id="addon_name_15">Pantau Lokasi GPS Karyawan</div>
+    <div class="hidden" id="addon_info_15">Informasi singkat untuk Add-On Pantau Lokasi GPS Karyawan</div>
+    <div class="hidden" id="addon_modal_desc_15">Fitur pemantauan lokasi kerja karyawan di lapangan melalui aplikasi
+        mobile.</div>
+
+    <div class="hidden" id="addon_name_16">Pantau Kinerja Karyawan</div>
+    <div class="hidden" id="addon_info_16">Informasi singkat untuk Add-On Pantau Kinerja Karyawan</div>
+    <div class="hidden" id="addon_modal_desc_16">Memonitor produktivitas karyawan yang bekerja dari mana saja secara
+        realtime.</div>
+
+    <div class="hidden" id="addon_name_9">Kirim Pengumuman via Ponsel</div>
+    <div class="hidden" id="addon_info_9">Informasi singkat untuk Add-On Kirim Pengumuman via Ponsel</div>
+    <div class="hidden" id="addon_modal_desc_9">Fitur ini digunakan untuk mengirimkan berbagai jenis pengumuman untuk
+        karyawan tertentu atau semua karyawan.</div>
+
+    <div class="hidden" id="addon_name_35">Kuota Absensi GPS per hari</div>
+    <div class="hidden" id="addon_info_35">Informasi singkat untuk Add-On Kuota Absensi GPS per hari</div>
+    <div class="hidden" id="addon_modal_desc_35">Add-on ini digunakan untuk menambahkan kuota absensi GPS per hari per
+        karyawan.</div>
+
+    <div class="hidden" id="addon_name_30">Passive Face Liveness (Liveness Face Recognition)</div>
+    <div class="hidden" id="addon_info_30">Informasi singkat untuk Add-On Passive Face Liveness</div>
+    <div class="hidden" id="addon_modal_desc_30">Meningkatkan keamanan absensi GPS dengan memastikan wajah asli secara
+        real-time.</div>
+
+    <div class="hidden" id="addon_name_47">Active Face Liveness (AI Liveness Face recognition)</div>
+    <div class="hidden" id="addon_info_47">Informasi singkat untuk Add-On Active Face Liveness</div>
+    <div class="hidden" id="addon_modal_desc_47">Verifikasi keaktifan wajah dengan gerakan tertentu (kedip/mulut) untuk
+        mencegah pemalsuan.</div>
+
+    <div class="hidden" id="addon_name_28">Absensi GPS Offline</div>
+    <div class="hidden" id="addon_info_28">Informasi singkat untuk Add-On Absensi GPS Offline</div>
+    <div class="hidden" id="addon_modal_desc_28">Karyawan dapat absensi GPS tanpa koneksi internet (offline).</div>
+
+    <div class="hidden" id="addon_name_13">API SDK - Absensi GPS</div>
+    <div class="hidden" id="addon_info_13">Informasi singkat untuk Add-On API SDK - Absensi GPS</div>
+    <div class="hidden" id="addon_modal_desc_13">Dapatkan data kehadiran absensi GPS melalui API fingerspot.io untuk
+        integrasi sistem HR Anda.</div>
+
+    <div class="hidden" id="addon_name_14">Push Server - Absensi GPS</div>
+    <div class="hidden" id="addon_info_14">Informasi singkat untuk Add-On Push Server - Absensi GPS</div>
+    <div class="hidden" id="addon_modal_desc_14">Kirim data absensi GPS realtime ke aplikasi Anda secara serverless.
+    </div>
+
+    <div class="hidden" id="addon_name_29">Pembatasan Wilayah (Geofences)</div>
+    <div class="hidden" id="addon_info_29">Informasi singkat untuk Add-On Pembatasan Wilayah (Geofences)</div>
+    <div class="hidden" id="addon_modal_desc_29">Membatasi wilayah kerja dengan geofence dan notifikasi masuk/keluar
+        area.</div>
+
+    <div class="hidden" id="addon_name_36">Map Clustering</div>
+    <div class="hidden" id="addon_info_36">Informasi singkat untuk Add-On Map Clustering</div>
+    <div class="hidden" id="addon_modal_desc_36">Lihat data lokasi karyawan dalam bentuk clustering di Maps.</div>
+
+    <div class="hidden" id="addon_name_37">Fitur SOS</div>
+    <div class="hidden" id="addon_info_37">Informasi singkat untuk Add-On Fitur SOS</div>
+    <div class="hidden" id="addon_modal_desc_37">Fitur darurat: kirim pesan SOS via tombol/goyang, notifikasi realtime,
+        dan broadcast.</div>
+
+    <!-- ===================== SCRIPT ===================== -->
+    <script>
+        /********************
+         * State
+         ********************/
+        const state = {
+            selectedPeriod: null,           // optional override for price period discounts
+            cart: [],                       // {key, type:'package'|'addon'|'bundling', id, name, unitLabel, price, qty, checked, meta}
+            selectedPackageId: null,
+            pendingPackageId: null,
+            usePoin9999: false,
+            company_topup_balance: 0,
+            use_topup_balance: 0,
+            constants_pricing_v3: { topup_balance_total: 0 },
+            admin_pay_bank: 1,
+        };
+
+        // Packages (from your given UI)
+        // NOTE: keep ids 1..5 exactly as your server side expects.
+        const PACKAGES = [
+            {
+                id: 1, name: "Paket Starter", basePrice: 150000, employees: 100, defaultPeriod: 2,
+                features: {
+                    quotaDevice: 1,
+                    employees: 100,
+                    workHoursManagement: true,
+                    dailyMonitoring: true,
+                    dailyAttendance: true,
+                    gpsWithNotification: 0,
+                    scanGpsQuota: 0,
+                    permitLeaveFromApps: 0,
+                    locationTracking: 0,
+                    overtime: 0,
+                }
+            },
+            {
+                id: 2, name: "Paket Basic", basePrice: 300000, employees: 200, defaultPeriod: 6,
+                features: {
+                    quotaDevice: 1, employees: 200,
+                    workHoursManagement: true, dailyMonitoring: true, dailyAttendance: true,
+                    gpsWithNotification: 2, scanGpsQuota: 5, permitLeaveFromApps: 0, locationTracking: 0, overtime: 0,
+                }
+            },
+            {
+                id: 3, name: "Paket Prime", basePrice: 500000, employees: 300, defaultPeriod: 12,
+                features: {
+                    quotaDevice: 1, employees: 300,
+                    workHoursManagement: true, dailyMonitoring: true, dailyAttendance: true,
+                    gpsWithNotification: 2, scanGpsQuota: 5, permitLeaveFromApps: 0, locationTracking: 2, overtime: 0,
+                }
+            },
+            {
+                id: 4, name: "Paket Enterprise", basePrice: 720000, employees: 600, defaultPeriod: 12,
+                features: {
+                    quotaDevice: 1, employees: 600,
+                    workHoursManagement: true, dailyMonitoring: true, dailyAttendance: true,
+                    gpsWithNotification: 2, scanGpsQuota: 10, permitLeaveFromApps: 0, locationTracking: 2, overtime: 2,
+                }
+            },
+            {
+                id: 5, name: "Paket Supreme", basePrice: 900000, employees: 1200, defaultPeriod: 12,
+                features: {
+                    quotaDevice: 1, employees: 1200,
+                    workHoursManagement: true, dailyMonitoring: true, dailyAttendance: true,
+                    gpsWithNotification: 4, scanGpsQuota: 10, permitLeaveFromApps: 0, locationTracking: 4, overtime: 4,
+                }
+            }
+        ];
+
+        // Addons — minimal demo pricing (you can plug server prices anytime)
+        // Kept IDs so your backend can map them.
+        const ADDONS = {
+            staff: [
+                { id: 46, nameId: 46, price: 5000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/user.png" },
+                { id: 50, nameId: 50, price: 12000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/user.png" },
+                { id: 51, nameId: 51, price: 10000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/user.png" },
+            ],
+            device: [
+                { id: 44, nameId: 44, price: 35000, unit: "per perangkat", actionLabel: "+ Kuota", icon: "https://fingerspot.io/assets3/img/addons/new/device.png" },
+                { id: 45, nameId: 45, price: 35000, unit: "per perangkat", actionLabel: "+ Kuota", icon: "https://fingerspot.io/assets3/img/addons/new/device.png" },
+            ],
+            app: [
+                { id: 38, nameId: 38, price: 80000, unit: "per karyawan", actionLabel: "+ Kuota", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 39, nameId: 39, price: 20000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 40, nameId: 40, price: 20000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 41, nameId: 41, price: 25000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 26, nameId: 26, price: 25000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 15, nameId: 15, price: 25000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 16, nameId: 16, price: 25000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 9, nameId: 9, price: 15000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 35, nameId: 35, price: 10000, unit: "per karyawan", actionLabel: "+ Kuota", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 30, nameId: 30, price: 15000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 47, nameId: 47, price: 20000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 28, nameId: 28, price: 10000, unit: "per karyawan", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 13, nameId: 13, price: 30000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 14, nameId: 14, price: 30000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 29, nameId: 29, price: 20000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 36, nameId: 36, price: 20000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+                { id: 37, nameId: 37, price: 20000, unit: "per pengguna", actionLabel: "+ Keranjang", icon: "https://fingerspot.io/assets3/img/addons/new/phone.png" },
+            ]
+        };
+
+        /********************
+         * Utils
+         ********************/
+        function rupiahFormat(n) {
+            const x = Number(n || 0);
+            return x.toLocaleString("id-ID");
+        }
+
+        function getEl(id) { return document.getElementById(id); }
+
+        function openModal(id) {
+            getEl("modalOverlay").classList.remove("hidden");
+            getEl("modalOverlay").classList.add("block");
+            const m = getEl(id);
+            m.classList.remove("hidden");
+            m.classList.add("flex");
+        }
+
+        function closeModal(id) {
+            const m = getEl(id);
+            m.classList.add("hidden");
+            m.classList.remove("flex");
+
+            // If no other modal visible, hide overlay
+            const anyOpen = [...document.querySelectorAll('[id^="modal_"],#confirmpph,#detail_addon_modal,#add_quota_warn,#imageModal,#modal_compare,#modal_confirmation,#temp_cart_modal,#modal_topup_balance_new')]
+                .some(x => x && x.classList.contains("flex") && !x.classList.contains("hidden"));
+
+            if (!anyOpen) {
+                getEl("modalOverlay").classList.add("hidden");
+                getEl("modalOverlay").classList.remove("block");
+            }
+        }
+
+        function toastr_msg(type, msg) {
+            const host = getEl("toastHost");
+            const div = document.createElement("div");
+            const color =
+                type === "success" ? "bg-emerald-600" :
+                    type === "error" ? "bg-rose-600" :
+                        type === "warning" ? "bg-amber-500" :
+                            "bg-slate-700";
+
+            div.className = `${color} text-white px-4 py-3 rounded-xl shadow-lg text-sm max-w-sm`;
+            div.textContent = msg;
+            host.appendChild(div);
+            setTimeout(() => { div.classList.add("opacity-0"); div.style.transition = "opacity .25s"; }, 2500);
+            setTimeout(() => { div.remove(); }, 2900);
+        }
+
+        function safeTextFromHidden(id) {
+            const el = getEl(id);
+            return el ? (el.textContent || "").trim() : "";
+        }
+
+        function getAddonMeta(addonId) {
+            // find in any category
+            const all = [...ADDONS.staff, ...ADDONS.device, ...ADDONS.app];
+            return all.find(a => a.id === addonId) || null;
+        }
+
+        function periodDays(months) {
+            // Match your UI feel (example: 12 -> 365).
+            if (months === 12) return 365;
+            if (months === 6) return 183;
+            if (months === 2) return 60;
+            return Math.round(months * 30);
+        }
+
+        function addDaysISO(date, days) {
+            const d = new Date(date.getTime());
+            d.setDate(d.getDate() + days);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        /********************
+         * Rendering
+         ********************/
+        function renderPackages() {
+            const wrap = getEl("listWrapper2");
+            wrap.innerHTML = "";
+
+            PACKAGES.forEach(p => {
+                const period = p.defaultPeriod;
+
+                const card = document.createElement("div");
+                card.className = "min-w-[320px] sm:min-w-[380px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition";
+
+                const selected = state.selectedPackageId === p.id;
+
+                card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-2xl font-bold ${selected ? "text-amber-600" : "text-amber-500"}">${p.name.replace("Paket ", "Paket ")}</div>
+              <div class="mt-1 text-xs text-sky-700">Rp <span class="font-semibold">${rupiahFormat(getPackagePrice(p.id))}</span> per perangkat absensi</div>
+            </div>
+
+            <div class="shrink-0">
+              <div class="relative h-[86px] w-[86px]">
+                <svg viewBox="0 0 100 100" class="h-[86px] w-[86px]">
+                  <circle cx="50" cy="50" r="40" stroke="#EBEBEB" stroke-width="10" fill="transparent"></circle>
+                  <circle cx="50" cy="50" r="40" stroke="#6A91FF" stroke-width="10" fill="transparent"
+                    stroke-dasharray="${2 * Math.PI * 40}"
+                    stroke-dashoffset="${(2 * Math.PI * 40) * (1 - Math.min(period, 12) / 12)}"
+                    transform="rotate(-90 50 50)"
+                  ></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <div class="text-[11px] text-slate-600">Periode</div>
+                  <div class="text-sm font-semibold text-sky-700">${period} Bln</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center gap-2 text-sm text-slate-700">
+            <img src="https://fingerspot.io/assets3/img/people-filled.png" alt="" class="h-4 w-4" />
+            <span>${p.employees} Karyawan</span>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <button
+              class="rounded-xl ${selected ? "bg-slate-100 text-slate-500" : "bg-sky-600 text-white hover:bg-sky-700"} px-4 py-3 text-sm font-semibold transition"
+              type="button"
+              ${selected ? "disabled" : ""}
+              onclick="addItem(${p.id}, 0, ${period});"
+            >
+              + Keranjang
+            </button>
+
+            <button
+              class="rounded-xl border border-sky-600 bg-white text-sky-700 hover:bg-sky-50 px-4 py-3 text-sm font-semibold transition"
+              type="button"
+              onclick="showCompareModal(${p.id});"
+            >
+              Bandingkan
+            </button>
+          </div>
+        `;
+
+                wrap.appendChild(card);
+            });
+        }
+
+        function renderAddons() {
+            renderAddonGrid("prostaff", ADDONS.staff);
+            renderAddonGrid("deviceAddonList", ADDONS.device);
+            renderAddonGrid("appAddonList", ADDONS.app);
+        }
+
+        function renderAddonGrid(containerId, list) {
+            const el = getEl(containerId);
+            el.innerHTML = "";
+
+            list.forEach(a => {
+                const name = safeTextFromHidden(`addon_name_${a.nameId}`) || `Add-On ${a.id}`;
+                const info = safeTextFromHidden(`addon_info_${a.nameId}`) || "Informasi singkat";
+
+                const card = document.createElement("div");
+                card.className = "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition";
+                card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center shrink-0 overflow-hidden">
+              <img src="${a.icon}" alt="" class="h-7 w-7 object-contain" onerror="this.style.display='none'" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-sm">${name}</div>
+              <div class="text-xs text-sky-700 mt-1">Rp <span class="font-semibold">${rupiahFormat(a.price)}</span> ${a.unit}</div>
+              <div class="text-xs text-slate-500 mt-2 line-clamp-2">${info}</div>
+
+              <div class="mt-3 flex items-center gap-2">
+                <button
+                  class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  type="button"
+                  onclick="showAddonInfo(${a.id})"
+                >
+                  Info
+                </button>
+
+                <button
+                  class="flex-1 rounded-xl bg-sky-600 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-700"
+                  type="button"
+                  onclick="addAddon(${a.id})"
+                >
+                  ${a.actionLabel}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+                el.appendChild(card);
+            });
+        }
+
+        function renderCart() {
+            const hasItems = state.cart.length > 0;
+            getEl("emptyCartPanel").classList.toggle("hidden", hasItems);
+            getEl("cartHeader").classList.toggle("hidden", !hasItems);
+
+            getEl("totalCount").textContent = String(state.cart.length);
+
+            const cartList = getEl("cartList");
+            cartList.innerHTML = "";
+
+            // Cart items
+            state.cart.forEach((item, idx) => {
+                const row = document.createElement("div");
+                row.className = "mt-3 rounded-2xl border border-slate-200 bg-white p-4";
+                row.innerHTML = `
+          <div class="flex items-start gap-3">
+            <input
+              class="mt-1 h-4 w-4 accent-sky-600"
+              type="checkbox"
+              ${item.checked ? "checked" : ""}
+              onchange="checkItem(${idx}, this)"
+              aria-label="Pilih item"
+            />
+
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-semibold text-sm">${item.name}</div>
+                  <div class="text-xs text-sky-700 mt-1">
+                    Rp <span class="font-semibold">${rupiahFormat(item.price)}</span> ${item.unitLabel || ""}
+                  </div>
+                </div>
+
+                <button
+                  class="rounded-lg border border-slate-200 p-2 hover:bg-slate-50"
+                  type="button"
+                  onclick="removeCartItem(${idx})"
+                  aria-label="Hapus"
+                >
+                  <img src="https://fingerspot.io/assets3/img/recycle_bin.png" class="h-4 w-4" alt="hapus" />
+                </button>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <button
+                    class="h-9 w-9 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 font-bold"
+                    type="button"
+                    onclick="decrementQty(${idx})"
+                    ${item.type === "bundling" ? "disabled" : ""}
+                    aria-label="Kurangi"
+                  >−</button>
+
+                  <input
+                    class="no-spin w-16 rounded-xl border border-slate-200 px-3 py-2 text-center text-sm"
+                    type="number"
+                    min="1"
+                    value="${item.qty}"
+                    onchange="setQty(${idx}, this.value)"
+                  />
+
+                  <button
+                    class="h-9 w-9 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 font-bold"
+                    type="button"
+                    onclick="incrementQty(${idx})"
+                    ${item.type === "bundling" ? "disabled" : ""}
+                    aria-label="Tambah"
+                  >+</button>
+                </div>
+
+                <div class="text-sm font-semibold">
+                  Sub Total: <span class="text-slate-900">Rp ${rupiahFormat(item.price * item.qty)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+                cartList.appendChild(row);
+            });
+
+            // Keep "select all" coherent
+            const allChecked = state.cart.every(x => x.checked);
+            getEl("flexCheckAll").checked = allChecked;
+
+            // Summary updates
+            updateSummary();
+            renderPackages(); // keep button disabled for selected package
+        }
+
+        /********************
+         * Pricing
+         ********************/
+        function getPackagePrice(packageId) {
+            const p = PACKAGES.find(x => x.id === packageId);
+            if (!p) return 0;
+
+            // Period-based discount example (optional):
+            // 6 months: -10%, 12 months: -15%
+            const m = p.defaultPeriod;
+            let price = p.basePrice;
+            if (m === 6) price = Math.round(price * 0.9);
+            if (m === 12) price = Math.round(price * 0.85);
+            return price;
+        }
+
+        function getTotalPrice(cart) {
+            return cart.filter(x => x.checked).reduce((sum, x) => sum + (x.price * x.qty), 0);
+        }
+
+        function updateSummary() {
+            const total = getTotalPrice(state.cart);
+            getEl("summaryTotal").textContent = `Rp ${rupiahFormat(total)}`;
+
+            const hasAnything = state.cart.length > 0;
+            getEl("detail-addon-modal-button").classList.toggle("hidden", !hasAnything);
+
+            // Total day & due date: based on selected package period if exists
+            const pkg = state.selectedPackageId ? PACKAGES.find(p => p.id === state.selectedPackageId) : null;
+            if (pkg) {
+                const days = periodDays(pkg.defaultPeriod);
+                getEl("preview_total_day").textContent = String(days);
+                getEl("preview_due_date").textContent = addDaysISO(new Date(), days);
+
+                getEl("div_total_day").classList.remove("hidden");
+                getEl("tooltip_total_day").classList.remove("hidden");
+            } else {
+                getEl("div_total_day").classList.add("hidden");
+                getEl("tooltip_total_day").classList.add("hidden");
+            }
+
+            // “Maximum package” banner
+            getEl("maximum-package").classList.toggle("hidden", state.selectedPackageId !== 5);
+        }
+
+        function draw_pricing_v3() {
+            // Hook point for your existing pricing redraw pipeline.
+            // Here we keep it functional and synced with UI.
+            const total = getTotalPrice(state.cart);
+            getEl("contprice_subtotal").textContent = `Rp ${rupiahFormat(total)}`;
+            getEl("contprice_dpp").textContent = `Rp ${rupiahFormat(total)}`;
+            getEl("ppn_rate").textContent = "(11%)";
+            const ppn = Math.round(total * 0.11);
+            getEl("contprice_ppn").textContent = `Rp ${rupiahFormat(ppn)}`;
+            getEl("contprice_total_billing").textContent = `Rp ${rupiahFormat(total + ppn)}`;
+            getEl("contprice_total_pay").textContent = `Rp ${rupiahFormat(Math.max(0, total + ppn - state.constants_pricing_v3.topup_balance_total))}`;
+
+            // invoice keterangan blocks
+            getEl("container_total_day").textContent = (state.selectedPackageId ? periodDays(PACKAGES.find(p => p.id === state.selectedPackageId).defaultPeriod) : 0) + " Hari";
+            getEl("container_due_date").textContent = (state.selectedPackageId ? addDaysISO(new Date(), periodDays(PACKAGES.find(p => p.id === state.selectedPackageId).defaultPeriod)) : "-");
+        }
+
+        /********************
+         * Cart actions
+         ********************/
+        function addItem(packageId, isApp, periodMonths) {
+            // If a different package already selected => confirm replace
+            if (state.selectedPackageId && state.selectedPackageId !== packageId) {
+                state.pendingPackageId = packageId;
+                openModal("modal_confirmation");
+                return;
+            }
+
+            // add or update selected package
+            const pkg = PACKAGES.find(p => p.id === packageId);
+            if (!pkg) return;
+
+            state.selectedPackageId = packageId;
+
+            const key = `package:${packageId}`;
+            const existingIdx = state.cart.findIndex(x => x.key === key);
+            if (existingIdx >= 0) {
+                state.cart[existingIdx].checked = true;
+                toastr_msg("info", "Paket sudah ada di keranjang.");
+            } else {
+                state.cart.unshift({
+                    key,
+                    type: "package",
+                    id: packageId,
+                    name: pkg.name,
+                    unitLabel: "per perangkat absensi",
+                    price: getPackagePrice(packageId),
+                    qty: 1,
+                    checked: true,
+                    meta: { periodMonths }
+                });
+                toastr_msg("success", "Paket ditambahkan ke keranjang.");
+            }
+
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        function changePackage() {
+            closeModal("modal_confirmation");
+            const packageId = state.pendingPackageId;
+            state.pendingPackageId = null;
+
+            // remove any existing package
+            state.cart = state.cart.filter(x => x.type !== "package");
+            state.selectedPackageId = null;
+
+            addItem(packageId, 0, PACKAGES.find(p => p.id === packageId)?.defaultPeriod || 12);
+        }
+
+        function addAddon(addonId) {
+            const meta = getAddonMeta(addonId);
+            if (!meta) return;
+
+            const name = safeTextFromHidden(`addon_name_${meta.nameId}`) || `Add-On ${addonId}`;
+
+            const key = `addon:${addonId}`;
+            const existingIdx = state.cart.findIndex(x => x.key === key);
+            if (existingIdx >= 0) {
+                state.cart[existingIdx].qty += 1;
+                state.cart[existingIdx].checked = true;
+                toastr_msg("success", "Kuota add-on ditambah.");
+            } else {
+                state.cart.push({
+                    key,
+                    type: "addon",
+                    id: addonId,
+                    name,
+                    unitLabel: meta.unit,
+                    price: meta.price,
+                    qty: 1,
+                    checked: true,
+                    meta: {}
+                });
+                toastr_msg("success", "Add-on ditambahkan ke keranjang.");
+            }
+
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        function removeCartItem(idx) {
+            const item = state.cart[idx];
+            if (!item) return;
+
+            // If removing selected package => clear selectedPackageId
+            if (item.type === "package") state.selectedPackageId = null;
+
+            state.cart.splice(idx, 1);
+            toastr_msg("success", "Item dihapus.");
+
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        function incrementQty(idx) {
+            const item = state.cart[idx];
+            if (!item) return;
+            item.qty = Math.max(1, Number(item.qty || 1) + 1);
+            renderCart(); draw_pricing_v3();
+        }
+
+        function decrementQty(idx) {
+            const item = state.cart[idx];
+            if (!item) return;
+            item.qty = Math.max(1, Number(item.qty || 1) - 1);
+            renderCart(); draw_pricing_v3();
+        }
+
+        function setQty(idx, val) {
+            const item = state.cart[idx];
+            if (!item) return;
+            const n = Math.max(1, Number(val || 1));
+            item.qty = n;
+            renderCart(); draw_pricing_v3();
+        }
+
+        function checkItem(idx, checkboxEl) {
+            const item = state.cart[idx];
+            if (!item) return;
+            item.checked = !!checkboxEl.checked;
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        function checkAllItem(checkboxEl) {
+            const checked = !!checkboxEl.checked;
+            state.cart.forEach(x => x.checked = checked);
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        function resetCart() {
+            state.cart = [];
+            state.selectedPackageId = null;
+            state.pendingPackageId = null;
+            toastr_msg("success", "Keranjang direset.");
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        /********************
+         * Bundling 9999 (kept functions)
+         ********************/
+        function delete9999() {
+            toastr_msg("success", "Bundling dihapus.");
+            getEl("bundling9999Container").classList.add("hidden");
+            // remove any bundling items if you model them inside state.cart
+        }
+
+        function alert_plusminus_9999() {
+            toastr_msg("info", "Anda tidak diperkenankan untuk menambah atau mengurangi paket bundling. Jika ingin menghapus, silakan klik tombol sampah.");
+        }
+
+        function usePoin9999() {
+            state.usePoin9999 = !!getEl("cb_p_allow_use_poin_9999").checked;
+            toastr_msg("success", state.usePoin9999 ? "Poin bundling digunakan." : "Poin bundling tidak digunakan.");
+        }
+
+        /********************
+         * Tabs
+         ********************/
+        function openTab(event, tabName) {
+            const pesanan = getEl("Pesanan");
+            const layanan = getEl("Layanan");
+            const btnP = getEl("tabBtnPesanan");
+            const btnL = getEl("tabBtnLayanan");
+
+            if (tabName === "Pesanan") {
+                pesanan.classList.remove("hidden");
+                layanan.classList.add("hidden");
+                btnP.classList.add("text-sky-700"); btnP.classList.remove("text-slate-500");
+                btnL.classList.add("text-slate-500"); btnL.classList.remove("text-sky-700");
+            } else {
+                layanan.classList.remove("hidden");
+                pesanan.classList.add("hidden");
+                btnL.classList.add("text-sky-700"); btnL.classList.remove("text-slate-500");
+                btnP.classList.add("text-slate-500"); btnP.classList.remove("text-sky-700");
+            }
+        }
+
+        /********************
+         * Accordions
+         ********************/
+        function toggleAccordion(contentId, iconId) {
+            const content = getEl(contentId);
+            const icon = getEl(iconId);
+            const isOpen = !content.classList.contains("hidden");
+
+            content.classList.toggle("hidden", isOpen);
+            // rotate icon
+            icon.classList.toggle("rotate-180", !isOpen);
+        }
+
+        // compatibility (old inline)
+        function handleIcon(selector) {
+            // selector like '#toogle-app'
+            const id = selector.replace("#", "");
+            const el = getEl(id);
+            if (!el) return;
+            el.classList.toggle("rotate-180");
+        }
+
+        /********************
+         * Compare
+         ********************/
+        function showCompareModal(compareWithId) {
+            const current = state.selectedPackageId ? PACKAGES.find(p => p.id === state.selectedPackageId) : PACKAGES.find(p => p.id === compareWithId);
+            const compared = PACKAGES.find(p => p.id === compareWithId);
+
+            const body = getEl("compareBody");
+            body.innerHTML = "";
+
+            const rows = [
+                ["Fitur yang akan Anda dapatkan :", current?.name || "-", compared?.name || "-"],
+                ["Jumlah Perangkat Absensi yang Terhubung", `${current.features.quotaDevice} Perangkat`, `${compared.features.quotaDevice} Perangkat`],
+                ["Jumlah Karyawan yang Dapat Ditambahkan (Tidak Terakumulasi)", `${current.features.employees} Karyawan`, `${compared.features.employees} Karyawan`],
+                ["Pengaturan Jadwal Kerja Karyawan", iconYesNo(current.features.workHoursManagement), iconYesNo(compared.features.workHoursManagement)],
+                ["Monitoring Kehadiran Harian (Daily Monitoring)", iconYesNo(current.features.dailyMonitoring), iconYesNo(compared.features.dailyMonitoring)],
+                ["Melihat Data Kehadiran dari Aplikasi Karyawan", iconYesNo(current.features.dailyAttendance), iconYesNo(compared.features.dailyAttendance)],
+                ["Absensi GPS dengan Notifikasi", quotaOrNo(current.features.gpsWithNotification), quotaOrNo(compared.features.gpsWithNotification)],
+                ["Maksimum Absensi GPS Per Hari", quotaOrNo(current.features.scanGpsQuota), quotaOrNo(compared.features.scanGpsQuota)],
+                ["Fitur Pengajuan Ijin dari Aplikasi Karyawan", quotaOrNo(current.features.permitLeaveFromApps), quotaOrNo(compared.features.permitLeaveFromApps)],
+                ["Fitur Pantau Lokasi di Aplikasi Karyawan", quotaOrNo(current.features.locationTracking), quotaOrNo(compared.features.locationTracking)],
+                ["Fitur Pengajuan Lembur dari Aplikasi Karyawan", quotaOrNo(current.features.overtime), quotaOrNo(compared.features.overtime)],
+            ];
+
+            rows.forEach((r, i) => {
+                const tr = document.createElement("tr");
+                tr.className = i === 0 ? "bg-white" : "border-t border-slate-200 bg-white";
+                tr.innerHTML = `
+          <td class="p-3 ${i === 0 ? "font-semibold text-slate-800" : "text-slate-700"}">${r[0]}</td>
+          <td class="p-3 text-center font-semibold">${r[1]}</td>
+          <td class="p-3 text-center font-semibold">${r[2]}</td>
+        `;
+                body.appendChild(tr);
+            });
+
+            openModal("modal_compare");
+        }
+
+        function iconYesNo(v) {
+            if (v) return `<span class="inline-flex items-center justify-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-1 text-xs font-semibold">✓</span>`;
+            return `<span class="inline-flex items-center justify-center rounded-full bg-rose-100 text-rose-700 px-2 py-1 text-xs font-semibold">✕</span>`;
+        }
+
+        function quotaOrNo(v) {
+            if (!v) return `<span class="inline-flex items-center justify-center rounded-full bg-rose-100 text-rose-700 px-2 py-1 text-xs font-semibold">✕</span>`;
+            return `<span class="inline-flex items-center justify-center rounded-full bg-slate-100 text-slate-800 px-2 py-1 text-xs font-semibold">${v}</span>`;
+        }
+
+        /********************
+         * Detail Add-on Modal
+         ********************/
+        function showModalAddon() {
+            const header = getEl("detail-addon-header");
+            const body = getEl("detail-addon-body");
+
+            header.innerHTML = `
+        <tr>
+          <th class="px-4 py-3 text-left text-slate-700 font-semibold">Item</th>
+          <th class="px-4 py-3 text-center text-slate-700 font-semibold">Qty</th>
+          <th class="px-4 py-3 text-right text-slate-700 font-semibold">Subtotal</th>
+        </tr>
+      `;
+
+            body.innerHTML = "";
+            state.cart.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.className = "border-t border-slate-200";
+                tr.innerHTML = `
+          <td class="px-4 py-3">${item.name}</td>
+          <td class="px-4 py-3 text-center">${item.qty}</td>
+          <td class="px-4 py-3 text-right">Rp ${rupiahFormat(item.price * item.qty)}</td>
+        `;
+                body.appendChild(tr);
+            });
+
+            openModal("detail_addon_modal");
+        }
+
+        /********************
+         * Due date modal
+         ********************/
+        function showModalDueDate() {
+            // Open the “temp cart” update modal (as your flow indicates)
+            openModal("temp_cart_modal");
+            // Fill with demo rows (kept ids)
+            getEl("container-temp-cart").innerHTML = `
+        <tr class="border-t border-slate-200">
+          <td class="p-3 text-center">${state.selectedPackageId ? PACKAGES.find(p => p.id === state.selectedPackageId).name : "-"}</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center"><button class="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-sky-700" type="button" onclick="toastr_msg('info','Aksi paket aktif (demo).')">Aksi</button></td>
+        </tr>
+      `;
+            getEl("container-temp-cart-addon").innerHTML = `
+        <tr class="border-t border-slate-200">
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center">-</td>
+          <td class="p-3 text-center"><button class="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-sky-700" type="button" onclick="toastr_msg('info','Aksi add-on aktif (demo).')">Aksi</button></td>
+        </tr>
+      `;
+        }
+
+        function closeModalDueDate() { closeModal("temp_cart_modal"); }
+
+        function resetTempAll() { toastr_msg("success", "Reset temp cart (demo)."); }
+
+        function saveTempCart() {
+            toastr_msg("success", "Perubahan disimpan (demo).");
+            closeModal("temp_cart_modal");
+        }
+
+        /********************
+         * Checkout & Order
+         ********************/
+        function checkout() {
+            const total = getTotalPrice(state.cart);
+            if (total <= 0) {
+                toastr_msg("warning", "Keranjang masih kosong.");
+                return;
+            }
+            // In production: redirect / open payment page.
+            toastr_msg("success", "Melanjutkan pembayaran (demo). Lihat console untuk payload.");
+            console.log("CHECKOUT_PAYLOAD", {
+                cart: state.cart,
+                total,
+                bank: state.admin_pay_bank,
+                use_topup_balance: state.use_topup_balance,
+            });
+
+            // show topup modal as example
+            openModal("modal_topup_balance_new");
+            getEl("topup_modal_total_pay").textContent = `Rp ${rupiahFormat(total)}`;
+            draw_pricing_v3();
+        }
+
+        function order() {
+            toastr_msg("success", "Order sekarang (demo).");
+        }
+
+        function back() {
+            toastr_msg("info", "Kembali (demo).");
+        }
+
+        function cart() {
+            toastr_msg("success", "Download (demo).");
+        }
+
+        function cancelChooseBundling() {
+            toastr_msg("info", "Bundling dibatalkan (demo).");
+            getEl("btnCancelChooseBundling").classList.add("hidden");
+        }
+
+        /********************
+         * Period price update (kept)
+         ********************/
+        function updateAllPriceItem(months) {
+            state.selectedPeriod = months;
+            toastr_msg("info", `Periode dipilih: ${months} bulan (demo).`);
+            // If you need to recalc package prices by global period selection:
+            // implement here and rerender cart + packages.
+            renderPackages();
+            renderCart();
+            draw_pricing_v3();
+        }
+
+        /********************
+         * PPH / EFaktur flow (kept)
+         ********************/
+        function check_show_modal_pph(val) {
+            if (val === 2) openModal("confirmpph");
+            else closeModal("confirmpph");
+        }
+
+        function uncheck_confirm_pph() {
+            closeModal("confirmpph");
+            getEl("fake_pph_1").checked = true;
+        }
+
+        function check_input_pph() {
+            const ok = getEl("confirm_pph").checked;
+            if (!ok) {
+                toastr_msg("warning", "Centang persetujuan terlebih dahulu.");
+                return;
+            }
+            toastr_msg("success", "Data EFaktur tersimpan (demo).");
+            closeModal("confirmpph");
+        }
+
+        /********************
+         * Voucher / reference code (kept)
+         ********************/
+        function check_code_referensi() {
+            const val = getEl("code_referensi").value.trim();
+            if (!val) {
+                getEl("message_code_referensi").textContent = "Kode referensi tidak boleh kosong.";
+                return;
+            }
+            getEl("message_code_referensi").textContent = "";
+            toastr_msg("success", "Kode referensi diperbarui (demo).");
+        }
+
+        function check_code_voucher() {
+            const val = getEl("kode_voucher").value.trim();
+            if (!val) {
+                getEl("message_kode_voucher").textContent = "Kode promo tidak boleh kosong.";
+                return;
+            }
+            getEl("message_kode_voucher").textContent = "";
+            getEl("label_kode_voucher").classList.remove("hidden");
+            toastr_msg("success", "Kode promo diterapkan (demo).");
+        }
+
+        function clear_kode_voucher() {
+            getEl("kode_voucher").value = "";
+            getEl("label_kode_voucher").classList.add("hidden");
+            toastr_msg("info", "Kode promo dihapus (demo).");
+        }
+
+        /********************
+         * Topup modal logic (kept, improved)
+         ********************/
+        function copy_company_topup_code() {
+            const text = getEl('company_topup_code').textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                toastr_msg('success', "Berhasil Menyalin");
+            }).catch(() => {
+                toastr_msg('error', "Gagal menyalin");
+            });
+        }
+
+        function check_use_topup_balance_v2() {
+            const total_pay = getTotalPrice(state.cart);
+
+            // demo balance (you can inject real balance)
+            state.company_topup_balance = Number(state.company_topup_balance || 0);
+
+            // UI reset
+            getEl('label_insufficient_balance').classList.add("hidden");
+            getEl('div_topup_code').classList.add("hidden");
+            getEl('div_sementara').classList.add("hidden");
+            getEl('div_formula').classList.add("hidden");
+            getEl('div_insufficient_desc').classList.add("hidden");
+
+            // display total pay
+            getEl('topup_modal_total_pay').textContent = 'Rp ' + rupiahFormat(total_pay);
+
+            let useTopupBalance = 0;
+            let topupTotal = 0;
+
+            const checked = getEl("checkbox_use_topup_v2").checked;
+
+            if (checked && total_pay > 0) {
+                // paid by topup at most = total
+                let paid_topup = Math.min(state.company_topup_balance, total_pay);
+
+                getEl('div_total_price').textContent = 'Rp ' + rupiahFormat(total_pay);
+                getEl('div_paid_topup').textContent = 'Rp ' + rupiahFormat(paid_topup);
+                getEl('div_insufficient').textContent = 'Rp ' + rupiahFormat(total_pay - paid_topup);
+                getEl('div_formula').classList.remove("hidden");
+
+                if (total_pay <= state.company_topup_balance) {
+                    topupTotal = total_pay;
+                    getEl('topup_modal_total_pay').textContent = 'Rp 0';
+                    getEl('topup_modal_button_next').disabled = false;
+                } else {
+                    topupTotal = state.company_topup_balance;
+                    getEl('label_insufficient_balance').classList.remove("hidden");
+                    getEl('div_insufficient_desc').classList.remove("hidden");
+                    getEl('div_topup_code').classList.remove("hidden");
+                    getEl('topup_modal_button_next').disabled = false; // still allow proceed (as your note)
+                }
+
+                useTopupBalance = 1;
+            } else {
+                topupTotal = 0;
+                useTopupBalance = 0;
+                getEl('topup_modal_button_next').disabled = false;
+            }
+
+            state.use_topup_balance = useTopupBalance;
+            state.constants_pricing_v3.topup_balance_total = topupTotal;
+            draw_pricing_v3();
+        }
+
+        function get_k_condition() {
+            // Hook for your existing flow.
+            toastr_msg("success", "Melanjutkan ke metode pembayaran berikutnya (demo).");
+        }
+
+        function update_admin_pay(bankId) {
+            state.admin_pay_bank = bankId;
+            toastr_msg("info", `Metode pembayaran dipilih: ${bankId} (demo).`);
+        }
+
+        /********************
+         * Add-on info
+         ********************/
+        function showAddonInfo(addonId) {
+            const meta = getAddonMeta(addonId);
+            if (!meta) return;
+
+            const name = safeTextFromHidden(`addon_name_${meta.nameId}`) || `Add-On ${addonId}`;
+            const desc = getEl(`addon_modal_desc_${meta.nameId}`)?.innerHTML || "Tidak ada deskripsi.";
+
+            // Reuse imageModal as generic content? We'll use a toast + console for now,
+            // and open imageModal to show a simple text overlay by swapping image to logo and showing desc in toast.
+            toastr_msg("info", name);
+            console.log("ADDON_DESC", { addonId, name, desc });
+            // If you want a real modal for desc, plug it here.
+            openModal("imageModal");
+            getEl("imagePreview").src = "https://fingerspot.io/assets3/img/new_logo/logo_text_grey.png";
+            // show desc quickly (safe)
+            setTimeout(() => toastr_msg("info", "Detail add-on tampil di console (demo)."), 100);
+        }
+
+        /********************
+         * Add quota warn (kept)
+         ********************/
+        function btnAddDeviceQuotaWarn() {
+            closeModal("add_quota_warn");
+            toastr_msg("success", "Lanjut tambah kuota perangkat (demo).");
+        }
+
+        /********************
+         * Init & bindings
+         ********************/
+        function initScrollButtons() {
+            const wrap = getEl("listWrapper2");
+            getEl("leftButton2").addEventListener("click", () => wrap.scrollBy({ left: -420, behavior: "smooth" }));
+            getEl("rightButton2").addEventListener("click", () => wrap.scrollBy({ left: 420, behavior: "smooth" }));
+        }
+
+        function boot() {
+            initScrollButtons();
+            renderPackages();
+            renderAddons();
+            renderCart();
+            draw_pricing_v3();
+
+            // Click overlay to close top-most (simple)
+            getEl("modalOverlay").addEventListener("click", () => {
+                // close any open modal
+                const candidates = ["modal_compare", "detail_addon_modal", "modal_confirmation", "add_quota_warn", "imageModal", "temp_cart_modal", "modal_topup_balance_new", "confirmpph"];
+                for (const id of candidates) {
+                    const el = getEl(id);
+                    if (el && el.classList.contains("flex") && !el.classList.contains("hidden")) {
+                        closeModal(id);
+                        break;
+                    }
+                }
+            });
+        }
+
+        boot();
+    </script>
+</body>
+
+</html>

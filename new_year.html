@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fingerspot.io • New Year 2026</title>
+    <meta name="theme-color" content="#2F6F9B" />
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #3F88B9;
+            /* background page */
+            --bg2: #2F6F9B;
+            /* header flat */
+            --ink: #272D34;
+            --shadow: 0 28px 90px rgba(2, 6, 23, .28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            background: var(--bg);
+            overflow-x: hidden;
+            color: rgba(15, 23, 42, .88);
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* dummy page */
+        .page {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 72px;
+            background: rgba(255, 255, 255, .92);
+            border-bottom: 1px solid rgba(15, 23, 42, .10);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 900;
+            color: rgba(15, 23, 42, .86);
+        }
+
+        .brandMark {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(62, 134, 179, .14);
+            border: 1px solid rgba(62, 134, 179, .20);
+            overflow: hidden;
+            color: var(--bg);
+        }
+
+        .brandMark svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .brand span {
+            font-size: 18px;
+            letter-spacing: .2px;
+        }
+
+        .rightTop {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(15, 23, 42, .72);
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: rgba(62, 134, 179, .18);
+            border: 1px solid rgba(62, 134, 179, .22);
+            display: grid;
+            place-items: center;
+            color: rgba(62, 134, 179, .95);
+            font-weight: 950;
+        }
+
+        .stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 34px 18px 44px;
+            background:
+                radial-gradient(1000px 520px at 20% 25%, rgba(102, 168, 207, .42) 0%, rgba(102, 168, 207, 0) 60%),
+                radial-gradient(900px 520px at 80% 30%, rgba(255, 255, 255, .14) 0%, rgba(255, 255, 255, 0) 62%),
+                linear-gradient(180deg, rgba(47, 111, 155, .45) 0%, rgba(47, 111, 155, 0) 55%);
+        }
+
+        .card {
+            width: min(440px, 100%);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid rgba(255, 255, 255, .65);
+            box-shadow: var(--shadow);
+            padding: 18px;
+            text-align: center;
+        }
+
+        .card h2 {
+            margin: 4px 0 6px;
+            color: rgba(62, 134, 179, .98);
+            font-weight: 900;
+            font-size: 26px;
+            letter-spacing: -.02em;
+        }
+
+        .card p {
+            margin: 0 0 14px;
+            color: rgba(15, 23, 42, .70);
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        .btn {
+            width: 100%;
+            border: 0;
+            cursor: pointer;
+            border-radius: 999px;
+            padding: 12px 14px;
+            font-weight: 900;
+            letter-spacing: .2px;
+            transition: .15s ease;
+            user-select: none;
+            font-size: 13px;
+            color: #fff;
+            background: linear-gradient(90deg, #2F6F9B 0%, #3E86B3 55%, #4D98C5 100%);
+            box-shadow: 0 18px 55px rgba(2, 6, 23, .18);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: .98;
+        }
+
+        /* ===== MODAL ===== */
+        .ny26-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            z-index: 999999;
+            background:
+                radial-gradient(1100px 650px at 20% 25%, rgba(102, 168, 207, .45) 0%, rgba(102, 168, 207, 0) 62%),
+                radial-gradient(900px 620px at 85% 30%, rgba(255, 255, 255, .14) 0%, rgba(255, 255, 255, 0) 65%),
+                linear-gradient(180deg, rgba(2, 6, 23, .62) 0%, rgba(2, 6, 23, .80) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            isolation: isolate;
+        }
+
+        .ny26-overlay.show {
+            display: flex;
+        }
+
+        .ny26-confetti {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ny26-modal {
+            width: min(560px, 92vw);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, .97);
+            box-shadow: 0 40px 140px rgba(0, 0, 0, .50);
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            transform: translateY(16px) scale(.98);
+            opacity: 0;
+            transition: .26s cubic-bezier(.2, .9, .2, 1);
+        }
+
+        .ny26-overlay.show .ny26-modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            animation: pop .72s cubic-bezier(.2, .9, .2, 1) both;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: translateY(22px) scale(.96);
+            }
+
+            60% {
+                transform: translateY(-2px) scale(1.01);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ===== HEADER (RAPIKAN DI SINI) ===== */
+        .ny26-hero {
+            background: var(--bg2);
+            padding: 14px 16px 12px;
+            position: relative;
+        }
+
+        .ny26-hairline {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, .16);
+            pointer-events: none;
+        }
+
+        .ny26-titleRow {
+            display: grid;
+            grid-template-columns: 44px 1fr 44px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* kiri: ikon kecil (tetap rapi) */
+        .ny26-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .10);
+            border: 1px solid rgba(255, 255, 255, .18);
+            display: grid;
+            place-items: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .ny26-badge svg {
+            width: 24px;
+            height: 24px;
+            opacity: .95;
+        }
+
+        /* tengah: title + subtitle */
+        .ny26-titleWrap {
+            text-align: center;
+            display: grid;
+            gap: 4px;
+        }
+
+        /* ✅ title super rapi, no emoji di text (emoji dipindah ke kanan) */
+        .ny26-title {
+            margin: 0;
+            color: rgba(255, 255, 255, .98);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            font-size: clamp(22px, 3.7vw, 34px);
+            line-height: 1.08;
+            text-shadow: 0 16px 46px rgba(2, 6, 23, .32);
+        }
+
+        .ny26-subtitle {
+            margin: 0;
+            color: rgba(255, 255, 255, .82);
+            font-weight: 700;
+            font-size: 12.5px;
+            letter-spacing: .01em;
+        }
+
+        /* kanan: emoji / deco */
+        .ny26-titleDeco {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: rgba(2, 6, 23, .18);
+            border: 1px solid rgba(255, 255, 255, .16);
+            color: rgba(255, 255, 255, .96);
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .ny26-titleDeco span {
+            display: inline-block;
+            transform-origin: center;
+        }
+
+        .ny26-overlay.show .ny26-titleDeco span {
+            animation: wiggle 700ms ease both;
+        }
+
+        @keyframes wiggle {
+            0% {
+                transform: rotate(0deg) scale(.98);
+            }
+
+            35% {
+                transform: rotate(-8deg) scale(1.06);
+            }
+
+            70% {
+                transform: rotate(6deg) scale(1.02);
+            }
+
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        /* ✅ body dipadatkan */
+        .ny26-body {
+            padding: 14px 16px 16px;
+            text-align: center;
+        }
+
+        .ny26-wageWrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+            margin-bottom: 10px;
+            perspective: 900px;
+        }
+
+        .ny26-wageLogo {
+            width: min(520px, 92%);
+            height: 90px;
+            border-radius: 18px;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            display: grid;
+            place-items: center;
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+            overflow: visible;
+        }
+
+        .ny26-wageLogo::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border-radius: 24px;
+            background: linear-gradient(115deg, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, .22) 45%, rgba(255, 255, 255, 0) 65%);
+            transform: translateX(-60%) rotate(8deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .ny26-wageLogo.is-hover::after {
+            opacity: 1;
+            animation: sweep 900ms ease forwards;
+        }
+
+        @keyframes sweep {
+            0% {
+                transform: translateX(-65%) rotate(8deg);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: .55;
+            }
+
+            100% {
+                transform: translateX(65%) rotate(8deg);
+                opacity: 0;
+            }
+        }
+
+        .ny26-wageLogo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transform: translateZ(30px);
+            filter: drop-shadow(0 10px 26px rgba(2, 6, 23, .18));
+            transition: transform .22s ease;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .ny26-copy {
+            margin: 0 auto;
+            max-width: 480px;
+            color: rgba(39, 45, 52, .78);
+            font-size: 14.5px;
+            line-height: 1.65;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+
+        .ny26-copy b {
+            color: rgba(39, 45, 52, .95);
+            font-weight: 900;
+        }
+
+        .ny26-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .ny26-btn {
+            border: 0;
+            cursor: pointer;
+            border-radius: 999px;
+            padding: 11px 16px;
+            font-weight: 900;
+            letter-spacing: .2px;
+            font-size: 13px;
+            transition: .15s ease;
+            user-select: none;
+            white-space: nowrap;
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ny26-btn:focus,
+        .ny26-btn:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .ny26-btn.primary {
+            color: #fff;
+            background: linear-gradient(90deg, #2F6F9B 0%, #3E86B3 55%, #4D98C5 100%);
+            box-shadow: 0 18px 55px rgba(2, 6, 23, .18);
+            animation: ctaPulse 2.6s ease-in-out infinite;
+        }
+
+        @keyframes ctaPulse {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                box-shadow: 0 18px 55px rgba(2, 6, 23, .18);
+            }
+
+            50% {
+                transform: translateY(-1px);
+                box-shadow: 0 22px 70px rgba(2, 6, 23, .22);
+            }
+        }
+
+        .ny26-btn.primary:hover {
+            transform: translateY(-2px);
+            opacity: .99;
+            animation-play-state: paused;
+        }
+
+        .ny26-btn.secondary {
+            background: rgba(62, 134, 179, .08);
+            color: rgba(47, 111, 155, .98);
+            border: 1px solid rgba(62, 134, 179, .18);
+        }
+
+        .ny26-btn.secondary:hover {
+            background: rgba(62, 134, 179, .11);
+            transform: translateY(-1px);
+        }
+
+        .ny26-foot {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: rgba(39, 45, 52, .62);
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        .ny26-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 800;
+            color: rgba(39, 45, 52, .70);
+        }
+
+        .ny26-check input {
+            transform: translateY(1px);
+        }
+
+        .ny26-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: rgba(47, 111, 155, .98);
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(47, 111, 155, .45);
+            padding-bottom: 2px;
+        }
+
+        .ny26-link:hover {
+            opacity: .9;
+        }
+
+        @media (max-width: 520px) {
+            .ny26-modal {
+                width: min(520px, 94vw);
+            }
+
+            .ny26-btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .ny26-wageLogo {
+                height: 78px;
+            }
+
+            .ny26-copy {
+                font-size: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ny26-overlay {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+
+            .ny26-overlay.show .ny26-modal {
+                animation: none;
+                transition: none;
+            }
+
+            .ny26-btn.primary {
+                animation: none;
+            }
+
+            .ny26-wageLogo.is-hover::after {
+                animation: none;
+            }
+
+            .ny26-overlay.show .ny26-titleDeco span {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="topbar">
+            <div class="brand" aria-label="fingerspot.io">
+                <div class="brandMark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2c4.7 0 8.5 3.8 8.5 8.5S16.7 19 12 19 3.5 15.2 3.5 10.5 7.3 2 12 2Z"
+                            stroke="currentColor" stroke-width="2" />
+                        <path d="M12 7.3a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 0 0 0-6.4Z" fill="currentColor" opacity=".25" />
+                    </svg>
+                </div>
+                <span>fingerspot.io</span>
+            </div>
+
+            <div class="rightTop">
+                <div class="avatar" aria-hidden="true">?</div>
+                Butuh Bantuan?
+            </div>
+        </header>
+
+        <main class="stage">
+            <section class="card">
+                <h2>Masuk</h2>
+                <p>Dummy, modal akan muncul saat load</p>
+                <button class="btn" type="button" id="demoOpenModal">Buka Modal Lagi</button>
+            </section>
+        </main>
+    </div>
+
+    <div id="ny26Overlay" class="ny26-overlay" aria-hidden="true">
+        <canvas id="ny26Confetti" class="ny26-confetti" aria-hidden="true"></canvas>
+
+        <div class="ny26-modal" role="dialog" aria-modal="true" aria-labelledby="ny26Title">
+            <!-- ✅ HEADER SUDAH RAPI (hapus nested .ny26-hero yang dobel) -->
+            <div class="ny26-hero">
+                <div class="ny26-titleRow">
+                    <div class="ny26-titleDeco" aria-hidden="true" title="New Year">
+                        <span>🎉</span>
+                    </div>
+
+                    <div class="ny26-titleWrap">
+                        <h3 id="ny26Title" class="ny26-title">Selamat Tahun Baru 2026</h3>
+                        <!-- <p class="ny26-subtitle">Integrasi Payroll WageConnect di fingerspot.io</p> -->
+                    </div>
+
+                    <div class="ny26-titleDeco" aria-hidden="true" title="New Year">
+                        <span>🎉</span>
+                    </div>
+                </div>
+                <div class="ny26-hairline" aria-hidden="true"></div>
+            </div>
+
+            <div class="ny26-body">
+                <div class="ny26-wageWrap">
+                    <div class="ny26-wageLogo" id="wageLogo3D" aria-label="WageConnect">
+                        <img src="WageConnect.png" alt="WageConnect Logo">
+                    </div>
+                </div>
+
+                <p class="ny26-copy">
+                    Di Tahun Baru ini, kami menghadirkan integrasi Payroll profesional bersama <b>WageConnect</b>
+                    sebagai wujud
+                    komitmen untuk pelanggan setia <b>Fingerspot.io</b>.
+                    <b>Aktifkan WageConnect</b> untuk menghitung gaji otomatis dan mengirim slip gaji lebih rapi dan
+                    cepat.
+                </p>
+
+                <div class="ny26-actions">
+                    <button class="ny26-btn primary" type="button" id="ny26ActivateBtn">Aktifkan WageConnect</button>
+                    <button class="ny26-btn secondary" type="button" id="ny26LaterBtn">Nanti dulu</button>
+                </div>
+
+                <div class="ny26-foot">
+                    <label class="ny26-check" for="ny26DontShow">
+                        <input type="checkbox" id="ny26DontShow" />
+                        Jangan tampilkan lagi
+                    </label>
+                    <span style="opacity:.55"></span>
+                </div>
+
+                <a class="ny26-link" href="https://wage.joglo.ink" target="_blank" rel="noopener">
+                    Kunjungi wageconnect.id →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'ny2026_wc_compact_v1';
+
+            const overlay = document.getElementById('ny26Overlay');
+            const laterBtn = document.getElementById('ny26LaterBtn');
+            const activateBtn = document.getElementById('ny26ActivateBtn');
+            const dontShow = document.getElementById('ny26DontShow');
+            const demoOpen = document.getElementById('demoOpenModal');
+
+            // ===== Confetti (canvas, no deps) =====
+            const canvas = document.getElementById('ny26Confetti');
+            const ctx = canvas.getContext('2d', { alpha: true });
+            let raf = null, particles = [], lastT = 0, running = false;
+
+            const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const palette = ['#ffffff', '#EAF3FB', '#66A8CF', '#3E86B3', '#2F6F9B', '#1F4F73', '#9FD0EA'];
+
+            function resizeCanvas() {
+                const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+                canvas.width = Math.floor(window.innerWidth * dpr);
+                canvas.height = Math.floor(window.innerHeight * dpr);
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+            function pick(a) { return a[(Math.random() * a.length) | 0]; }
+
+            function makeParticle(x, y, vx, vy, mode) {
+                const shape = Math.random() < 0.72 ? 'rect' : 'ribbon';
+                const w = shape === 'rect' ? rand(6, 11) : rand(11, 20);
+                const h = shape === 'rect' ? rand(8, 16) : rand(4, 7);
+                return {
+                    x, y, vx, vy, w, h,
+                    rot: rand(0, Math.PI * 2),
+                    vr: rand(-8, 8),
+                    g: mode === 'rain' ? rand(520, 780) : rand(640, 980),
+                    drag: mode === 'rain' ? rand(0.985, 0.995) : rand(0.975, 0.992),
+                    sway: rand(10, 20),
+                    t: 0,
+                    life: rand(2.0, 3.7),
+                    color: pick(palette),
+                    alpha: 1,
+                    shape
+                };
+            }
+
+            function roundRect(x, y, w, h, r) {
+                const rr = Math.min(r, w / 2, h / 2);
+                ctx.beginPath();
+                ctx.moveTo(x + rr, y);
+                ctx.arcTo(x + w, y, x + w, y + h, rr);
+                ctx.arcTo(x + w, y + h, x, y + h, rr);
+                ctx.arcTo(x, y + h, x, y, rr);
+                ctx.arcTo(x, y, x + w, y, rr);
+                ctx.closePath();
+            }
+
+            function burst(cx, cy, count, power) {
+                for (let i = 0; i < count; i++) {
+                    const a = rand(0, Math.PI * 2);
+                    const sp = rand(power * 0.45, power);
+                    particles.push(makeParticle(cx, cy, Math.cos(a) * sp, Math.sin(a) * sp, 'burst'));
+                }
+            }
+            function rain(count) {
+                for (let i = 0; i < count; i++) {
+                    const x = rand(0, window.innerWidth);
+                    const y = rand(-window.innerHeight * 0.35, -20);
+                    const vx = rand(-40, 40);
+                    const vy = rand(160, 340);
+                    particles.push(makeParticle(x, y, vx, vy, 'rain'));
+                }
+            }
+
+            function step(ts) {
+                if (!running) return;
+                if (!lastT) lastT = ts;
+                const dt = Math.min(0.033, (ts - lastT) / 1000);
+                lastT = ts;
+
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.t += dt;
+
+                    p.vx *= Math.pow(p.drag, dt * 60);
+                    p.vy *= Math.pow(p.drag, dt * 60);
+                    p.vy += p.g * dt;
+
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    p.rot += p.vr * dt;
+
+                    p.x += Math.sin((p.t * 6) + p.rot) * (p.sway * dt);
+
+                    const k = p.t / p.life;
+                    p.alpha = k < 0.75 ? 1 : Math.max(0, 1 - (k - 0.75) / 0.25);
+
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.fillStyle = p.color;
+
+                    if (p.shape === 'rect') {
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    } else {
+                        roundRect(-p.w / 2, -p.h / 2, p.w, p.h, Math.min(6, p.h / 2));
+                        ctx.fill();
+                    }
+                    ctx.restore();
+
+                    if (p.y > window.innerHeight + 90 || p.x < -140 || p.x > window.innerWidth + 140 || p.t >= p.life) {
+                        particles.splice(i, 1);
+                    }
+                }
+                raf = requestAnimationFrame(step);
+            }
+
+            function stopConfetti(soft) {
+                if (!running) return;
+                if (!soft) particles = [];
+                running = false;
+                if (raf) cancelAnimationFrame(raf);
+                raf = null;
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            }
+
+            function startBurst() {
+                if (prefersReduced) return;
+                resizeCanvas();
+                particles = [];
+                running = true;
+                lastT = 0;
+
+                const cx = window.innerWidth * 0.50;
+                const cy = window.innerHeight * 0.16;
+
+                burst(cx, cy, 170, 540);
+                burst(window.innerWidth * 0.25, window.innerHeight * 0.20, 120, 520);
+                burst(window.innerWidth * 0.75, window.innerHeight * 0.20, 120, 520);
+                rain(160);
+
+                setTimeout(() => { if (running) rain(90); }, 420);
+                raf = requestAnimationFrame(step);
+                setTimeout(() => stopConfetti(true), 3800);
+            }
+
+            let repeatTimer = null;
+            function startRepeat() {
+                if (prefersReduced) return;
+                clearInterval(repeatTimer);
+                repeatTimer = setInterval(() => {
+                    if (!overlay.classList.contains('show')) return;
+                    if (!running) {
+                        resizeCanvas();
+                        running = true;
+                        lastT = 0;
+                        raf = requestAnimationFrame(step);
+                    }
+                    rain(60);
+                    setTimeout(() => stopConfetti(true), 1400);
+                }, 7600);
+            }
+            function stopRepeat() { clearInterval(repeatTimer); repeatTimer = null; }
+
+            window.addEventListener('resize', () => { if (running) resizeCanvas(); }, { passive: true });
+
+            // ===== 3D hover =====
+            const logo = document.getElementById('wageLogo3D');
+            let rafTilt = null;
+
+            function setLogoTransform(rx, ry, s) {
+                const cx = Math.max(-10, Math.min(10, rx));
+                const cy = Math.max(-12, Math.min(12, ry));
+                logo.style.transform = `rotateX(${cx}deg) rotateY(${cy}deg) scale(${s})`;
+                const img = logo.querySelector('img');
+                if (img) img.style.transform = `translateZ(30px) scale(${Math.min(1.03, s)})`;
+            }
+
+            function onMove(e) {
+                const r = logo.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width;
+                const y = (e.clientY - r.top) / r.height;
+                const ry = (x - 0.5) * 18;
+                const rx = -(y - 0.5) * 14;
+                cancelAnimationFrame(rafTilt);
+                rafTilt = requestAnimationFrame(() => setLogoTransform(rx, ry, 1.03));
+            }
+
+            function onEnter() {
+                logo.classList.add('is-hover');
+                setLogoTransform(0, 0, 1.03);
+            }
+            function onLeave() {
+                logo.classList.remove('is-hover');
+                cancelAnimationFrame(rafTilt);
+                logo.style.transform = '';
+                const img = logo.querySelector('img');
+                if (img) img.style.transform = 'translateZ(30px)';
+            }
+
+            if (logo && !prefersReduced) {
+                logo.addEventListener('mouseenter', onEnter);
+                logo.addEventListener('mousemove', onMove);
+                logo.addEventListener('mouseleave', onLeave);
+            }
+
+            // ===== Modal =====
+            function openModal(force) {
+                if (!force) {
+                    try { if (localStorage.getItem(STORAGE_KEY) === '1') return; } catch (e) { }
+                }
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.documentElement.style.overflow = 'hidden';
+                document.body.style.overflow = 'hidden';
+
+                if (logo && !prefersReduced) {
+                    logo.animate([
+                        { transform: 'scale(.92) rotateX(0deg) rotateY(0deg)', opacity: .0 },
+                        { transform: 'scale(1.06) rotateX(0deg) rotateY(0deg)', opacity: 1, offset: .65 },
+                        { transform: 'scale(1.00) rotateX(0deg) rotateY(0deg)', opacity: 1 }
+                    ], { duration: 520, easing: 'cubic-bezier(.2,.9,.2,1)', fill: 'both' });
+                }
+
+                startBurst();
+                startRepeat();
+                setTimeout(() => activateBtn?.focus(), 140);
+            }
+
+            function closeModal() {
+                if (dontShow?.checked) {
+                    try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) { }
+                }
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+                stopRepeat();
+                stopConfetti(false);
+                onLeave();
+            }
+
+            window.addEventListener('load', () => openModal(false));
+            demoOpen?.addEventListener('click', () => openModal(true));
+            laterBtn?.addEventListener('click', closeModal);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
+
+            activateBtn?.addEventListener('click', () => {
+                window.open('https://wage.joglo.ink', '_blank', 'noopener');
+                closeModal();
+            });
+        })();
+    </script>
+</body>
+
+</html>

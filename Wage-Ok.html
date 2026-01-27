@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Top Left Mini Modal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --g1:#065f46;   /* emerald-800 */
+      --g2:#10b981;   /* emerald-500 */
+      --g3:#34d399;   /* emerald-400 */
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-slate-100 p-6">
+
+  <!-- Mini Modal (always visible) -->
+  <div
+    role="dialog"
+    aria-modal="false"
+    class="fixed left-4 top-4 z-40 w-[360px] max-w-[calc(100vw-2rem)]
+           overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/10"
+  >
+    <!-- Gradient header -->
+    <div class="bg-gradient-to-r from-[var(--g1)] via-[var(--g2)] to-[var(--g3)] px-4 py-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-white">
+          WageConnect
+        </h3>
+        <button
+          class="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/80
+                 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
+          aria-label="Tutup"
+        >
+          ✕
+        </button>
+      </div>
+      <p class="mt-0.5 text-xs text-white/90">
+        Payroll &amp; HR Integration
+      </p>
+    </div>
+
+    <!-- Content -->
+    <div class="px-4 py-4">
+     <h4 class="text-sm font-semibold text-slate-900">
+  Wage Connect membantu perusahaan mengelola dan mengintegrasikan data penggajian secara efisien
+</h4>
+
+<p class="mt-3 text-sm text-slate-600
+          overflow-hidden text-ellipsis [display:-webkit-box]
+          [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">
+  Hubungkan data payroll dan HR Anda secara aman dan real-time dalam satu klik.
+</p>
+
+
+      <!-- CTA row -->
+      <div class="mt-4 flex items-center justify-between">
+        <!-- Status -->
+        <div class="inline-flex items-center gap-2 rounded-full
+                    bg-emerald-50 px-3 py-1 text-xs text-emerald-800 ring-1 ring-emerald-100">
+          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+          Aktif
+        </div>
+
+        <!-- CTA -->
+       <a
+  href="file:///Users/triyono/Documents/WageConnect/Tampilan%20lanjut%20detail.html"
+  class="group inline-flex items-center gap-1.5 rounded-full
+         px-3 py-1.5 text-sm font-semibold text-emerald-700
+         hover:bg-emerald-50 focus:outline-none focus:ring-4 focus:ring-emerald-200"
+>
+  Lihat Detail
+  <svg
+    class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path d="M10 6l6 6-6 6"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </svg>
+</a>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

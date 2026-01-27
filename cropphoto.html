@@ -1,0 +1,503 @@
+<!--
+  Modal "Potong Foto" — REVISI sesuai request:
+  ✅ Layout 2 kolom 50:50 (Foto Asal + Pratinjau) | (Contoh Foto)
+  ✅ Contoh Foto: 1 BENAR + 3 SALAH sejajar dalam satu baris (desktop), wrap responsif
+  ✅ Modal responsif (stack jadi 1 kolom di mobile)
+  Pure HTML/CSS/JS (tanpa dependency).
+-->
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --soft:#f9fafb;
+
+    --blue:#2563eb;
+    --blue-100:#dbeafe;
+
+    --amber-100:#fef3c7;
+
+    --green:#16a34a;
+    --green-100:#dcfce7;
+
+    --red:#dc2626;
+    --red-100:#fee2e2;
+
+    --shadow: 0 20px 60px rgba(0,0,0,.20);
+  }
+
+  /* Backdrop + Modal */
+  .fp-backdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 16px;
+    z-index: 9999;
+  }
+  .fp-backdrop.is-open{ display:flex; }
+
+  .fp-modal{
+    width: min(1200px, 100%);
+    max-height: calc(100vh - 32px);
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    display:flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .fp-modal__header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 16px 18px 10px 18px;
+    flex: 0 0 auto;
+  }
+  .fp-modal__header h2{
+    margin:0;
+    font-size: 26px;
+    letter-spacing: -.2px;
+    color: var(--text);
+  }
+  .fp-close{
+    appearance:none;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 6px 10px;
+    border-radius: 10px;
+  }
+  .fp-close:hover{ background: #f3f4f6; color:#4b5563; }
+
+  /* Banner */
+  .fp-banner{
+    margin: 0 18px 10px 18px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid #fde68a;
+    background: var(--amber-100);
+    color: #92400e;
+    font-size: 14px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    flex: 0 0 auto;
+  }
+  .fp-banner b{ color:#78350f; }
+  .fp-banner .fp-ic{
+    width: 22px; height:22px; border-radius:8px;
+    display:grid; place-items:center;
+    background: rgba(245,158,11,.18);
+    border: 1px solid rgba(245,158,11,.25);
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+
+  /* Body (scrollable if needed) */
+  .fp-modal__body{
+    padding: 10px 18px 0 18px;
+    overflow:auto;
+    flex: 1 1 auto;
+  }
+
+  /* 2 columns 50:50 */
+  .fp-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr; /* 50:50 */
+    gap: 18px;
+    align-items:start;
+    padding-bottom: 14px;
+  }
+  @media (max-width: 980px){
+    .fp-grid{
+      grid-template-columns: 1fr; /* responsive stack */
+    }
+  }
+
+  /* Section title */
+  .fp-section-title{
+    font-size: 18px;
+    margin: 0 0 10px 0;
+    color: var(--text);
+    font-weight: 900;
+    position: relative;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .fp-section-title:after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-1px;
+    width: 110px;
+    height: 3px;
+    background: var(--blue);
+    border-radius: 3px;
+  }
+
+  /* Cards */
+  .fp-card{
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .fp-card__pad{ padding: 12px; }
+
+  /* Cropper placeholder */
+  .fp-crop-stage{
+    height: 360px;
+    display:grid;
+    place-items:center;
+    background:
+      linear-gradient(45deg,#e5e7eb 25%,transparent 25%) 0 0/18px 18px,
+      linear-gradient(-45deg,#e5e7eb 25%,transparent 25%) 0 9px/18px 18px,
+      linear-gradient(45deg,transparent 75%,#e5e7eb 75%) 0 0/18px 18px,
+      linear-gradient(-45deg,transparent 75%,#e5e7eb 75%) 0 9px/18px 18px;
+    background-color:#f3f4f6;
+    position: relative;
+  }
+  .fp-crop-note{
+    position:absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .fp-crop-note .fp-ic{
+    width: 22px; height:22px; border-radius:8px;
+    display:grid; place-items:center;
+    background: var(--blue-100);
+    border: 1px solid rgba(37,99,235,.25);
+    color: var(--blue);
+    flex:0 0 auto;
+    margin-top: 1px;
+  }
+
+  /* Preview under Foto Asal */
+  .fp-preview-row{
+    display:flex;
+    gap: 12px;
+    align-items:flex-start;
+    flex-wrap: wrap;
+  }
+
+  .fp-preview-img{
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #f3f4f6;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    flex: 0 0 auto;
+  }
+  .fp-preview-img img{ width:100%; height:100%; object-fit: cover; }
+
+  .fp-meta{
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    min-width: 220px;
+  }
+  .fp-meta a{
+    color: var(--blue);
+    font-weight: 900;
+    text-decoration:none;
+  }
+
+  .fp-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  /* Right: examples — 1 benar + 3 salah sejajar */
+  .fp-guide-top{
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .fp-examples-row{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr); /* sejajar 4 kolom */
+    gap: 10px;
+  }
+
+  /* Responsive breakpoints for examples */
+  @media (max-width: 980px){
+    .fp-examples-row{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px){
+    .fp-examples-row{ grid-template-columns: 1fr; }
+  }
+
+  .fp-example{
+    background:#fff;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    overflow:hidden;
+  }
+  .fp-example--ok{
+    border-color: rgba(22,163,74,.65);
+    box-shadow: 0 6px 18px rgba(22,163,74,.10);
+  }
+  .fp-example--no{
+    border-color: rgba(220,38,38,.65);
+    box-shadow: 0 6px 18px rgba(220,38,38,.10);
+  }
+
+  .fp-example__head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding: 8px 10px;
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+  }
+  .fp-pill{
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .fp-pill--ok{ background: var(--green-100); color:#166534; border-color: rgba(22,163,74,.25); }
+  .fp-pill--no{ background: var(--red-100); color:#991b1b; border-color: rgba(220,38,38,.22); }
+
+  .fp-example__img{
+    width:100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    background:#f3f4f6;
+    display:block;
+  }
+
+  .fp-example__cap{
+    padding: 8px 10px 10px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .fp-example__cap b{ color: var(--text); }
+
+  .fp-quick{
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(37,99,235,.22);
+    background: rgba(37,99,235,.06);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  /* Footer */
+  .fp-modal__footer{
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    padding: 12px 18px 16px 18px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+    flex: 0 0 auto;
+  }
+  .fp-btn{
+    appearance:none;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 900;
+    cursor:pointer;
+    font-size: 14px;
+  }
+  .fp-btn--ghost{ background: #111827; color:#fff; }
+  .fp-btn--ghost:hover{ opacity:.9; }
+  .fp-btn--primary{ background: var(--blue); color:#fff; }
+  .fp-btn--primary:hover{ filter: brightness(.95); }
+</style>
+
+<!-- Trigger button (demo) -->
+<button class="fp-btn fp-btn--primary" type="button" onclick="openPhotoModal()">Buka Modal Potong Foto</button>
+
+<div class="fp-backdrop" id="fpBackdrop" role="dialog" aria-modal="true" aria-labelledby="fpModalTitle">
+  <div class="fp-modal">
+    <div class="fp-modal__header">
+      <h2 id="fpModalTitle">Potong Foto</h2>
+      <button class="fp-close" type="button" aria-label="Tutup" onclick="closePhotoModal()">×</button>
+    </div>
+
+    <div class="fp-banner">
+      <div class="fp-ic">⚠️</div>
+      <div>
+        Silahkan memotong foto sesuai kebutuhan Anda. <b>Ukuran file tidak boleh melebihi 100KB.</b><br/>
+        Pastikan wajah <b>lurus</b>, <b>jelas</b>, dan <b>dahi–dagu tidak terpotong</b>.
+      </div>
+    </div>
+
+    <div class="fp-modal__body">
+      <div class="fp-grid">
+        <!-- LEFT (50%): Foto Asal + Pratinjau Hasil di bawahnya -->
+        <div>
+          <h3 class="fp-section-title">Foto Asal</h3>
+
+          <div class="fp-card">
+            <div class="fp-crop-stage">
+              <!-- Integrasikan cropper Anda di sini -->
+              <div style="text-align:center; color:#6b7280; font-weight:900;">
+                Area Cropper<br/>
+                <span style="font-size:12px; font-weight:600;">(tempatkan komponen cropper Anda)</span>
+              </div>
+
+              <div class="fp-crop-note">
+                <div class="fp-ic">💡</div>
+                <div>
+                  Sesuaikan frame agar <b>wajah memenuhi area</b>. Posisi <b>mata</b> di tengah,
+                  dan <b>dahi–dagu</b> tidak terpotong.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <h3 class="fp-section-title">Pratinjau Hasil</h3>
+
+          <div class="fp-card">
+            <div class="fp-card__pad">
+              <div class="fp-preview-row">
+                <div class="fp-preview-img" title="Pratinjau hasil crop">
+                  <!-- Ganti dengan hasil crop -->
+                  <img src="https://via.placeholder.com/320x320.png?text=Preview" alt="Pratinjau hasil">
+                </div>
+
+                <div class="fp-meta">
+                  Ukuran gambar maksimal : <b>100KB</b><br/>
+                  Ukuran gambar yang terpotong : <a href="javascript:void(0)">6KB</a>
+
+                  <div class="fp-chip">
+                    ✅ Jika sudah sesuai, klik <b>Simpan Perubahan</b>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fp-quick">
+                <b>Tips cepat:</b> Foto terbaik mirip foto ID—wajah jelas, lurus, pencahayaan merata, tanpa penutup wajah.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT (50%): Contoh Foto (1 benar + 3 salah sejajar) -->
+        <div>
+          <h3 class="fp-section-title">Contoh Foto</h3>
+          <div class="fp-guide-top">
+            Jadikan <b>Foto Benar</b> sebagai acuan. Hindari 3 contoh <b>Foto Salah</b> berikut agar proses verifikasi tidak gagal.
+          </div>
+
+          <div class="fp-examples-row">
+            <!-- BENAR (1) -->
+            <div class="fp-example fp-example--ok">
+              <div class="fp-example__head">
+                <span class="fp-pill fp-pill--ok">✅ Benar</span>
+              </div>
+              <!-- Ganti src dengan asset contoh BENAR -->
+              <img class="fp-example__img" src="https://via.placeholder.com/700x700.png?text=Benar" alt="Contoh foto benar">
+              <div class="fp-example__cap">
+                <b>OK:</b> wajah lurus, terang, dahi–dagu utuh
+              </div>
+            </div>
+
+            <!-- SALAH (1) -->
+            <div class="fp-example fp-example--no">
+              <div class="fp-example__head">
+                <span class="fp-pill fp-pill--no">❌ Salah</span>
+              </div>
+              <img class="fp-example__img" src="https://via.placeholder.com/700x700.png?text=Gelap" alt="Contoh foto salah: gelap">
+              <div class="fp-example__cap">
+                <b>Salah:</b> gelap / backlight (wajah tidak terbaca)
+              </div>
+            </div>
+
+            <!-- SALAH (2) -->
+            <div class="fp-example fp-example--no">
+              <div class="fp-example__head">
+                <span class="fp-pill fp-pill--no">❌ Salah</span>
+              </div>
+              <img class="fp-example__img" src="https://via.placeholder.com/700x700.png?text=Blur" alt="Contoh foto salah: blur">
+              <div class="fp-example__cap">
+                <b>Salah:</b> blur / pecah (detail wajah hilang)
+              </div>
+            </div>
+
+            <!-- SALAH (3) -->
+            <div class="fp-example fp-example--no">
+              <div class="fp-example__head">
+                <span class="fp-pill fp-pill--no">❌ Salah</span>
+              </div>
+              <img class="fp-example__img" src="https://via.placeholder.com/700x700.png?text=Tertutup" alt="Contoh foto salah: tertutup">
+              <div class="fp-example__cap">
+                <b>Salah:</b> wajah tertutup (masker/kacamata/topi)
+              </div>
+            </div>
+          </div>
+
+          <div class="fp-quick" style="margin-top:12px;">
+            <b>Kalau foto Anda mirip “Salah”:</b> ulangi foto dengan pencahayaan lebih terang, wajah menghadap kamera, dan tanpa penutup wajah.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fp-modal__footer">
+      <button class="fp-btn fp-btn--ghost" type="button" onclick="closePhotoModal()">Tutup</button>
+      <button class="fp-btn fp-btn--primary" type="button" onclick="alert('Simpan Perubahan (demo)')">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openPhotoModal(){
+    document.getElementById('fpBackdrop').classList.add('is-open');
+  }
+  function closePhotoModal(){
+    document.getElementById('fpBackdrop').classList.remove('is-open');
+  }
+  document.getElementById('fpBackdrop').addEventListener('click', function(e){
+    if(e.target === this) closePhotoModal();
+  });
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePhotoModal();
+  });
+</script>

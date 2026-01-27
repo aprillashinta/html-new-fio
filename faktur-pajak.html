@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Invoice</title>
+
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#1f1f1f;
+    padding:40px;
+    font-size:12px;
+}
+
+.inv{
+    width:860px;
+    background:#fff;
+    margin:auto;
+    position:relative;
+    padding-bottom:40px;
+}
+
+.top{
+    height:14px;
+    background:#6fa8dc;
+}
+
+/* ribbon */
+.badge{
+    position:absolute;
+    top:12px;
+    right:-55px;
+    width:160px;
+    height:28px;
+    background:#0b4fa2;
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(35deg);
+}
+
+/* logo */
+.logo{
+    text-align:center;
+    font-size:36px;
+    font-weight:700;
+    color:#666;
+    margin:22px 0 10px;
+}
+.logo span{color:#6fa8dc}
+
+/* header info */
+.head{
+    display:flex;
+    justify-content:space-between;
+    padding:0 50px;
+    font-size:12.5px;
+    line-height:1.8;
+}
+
+/* table */
+table{
+    width:88%;
+    margin:18px auto;
+    border-collapse:collapse;
+}
+
+th{
+    background:#6fa8dc;
+    color:#fff;
+    font-weight:600;
+    padding:7px;
+    border:1px solid #6fa8dc;
+}
+
+td{
+    padding:7px;
+    border:1px solid #d6e6f7;
+    text-align:center;
+}
+
+.l{text-align:left}
+
+.grp{
+    background:#eef6fd;
+    font-weight:600;
+}
+
+/* payment + total */
+.row{
+    width:88%;
+    margin:20px auto;
+    display:flex;
+    justify-content:space-between;
+}
+
+.va{
+    font-size:14px;
+    font-weight:700;
+    margin-top:4px;
+}
+
+.total{
+    width:300px;
+}
+
+.t{
+    display:flex;
+    justify-content:space-between;
+    padding:3px 0;
+}
+
+.subtotal{font-weight:600}
+
+.total-line{
+    margin-top:6px;
+    padding-top:6px;
+    border-top:1px solid #cfe2f3;
+    font-weight:600;
+}
+
+.pay-line{
+    font-weight:700;
+    font-size:13px;
+}
+
+/* bottom sections */
+.sec{
+    width:88%;
+    margin:auto;
+    border-top:1px solid #cfe2f3;
+    padding-top:14px;
+}
+
+h4{
+    color:#6fa8dc;
+    font-size:13px;
+    margin:6px 0 10px;
+}
+
+.info{
+    display:grid;
+    grid-template-columns:140px 10px auto;
+    margin-bottom:4px;
+}
+
+.serv{
+    display:grid;
+    grid-template-columns:200px auto;
+    margin-bottom:6px;
+}
+
+img{height:16px;vertical-align:middle}
+</style>
+</head>
+
+<body>
+
+<div class="inv">
+<div class="top"></div>
+<div class="badge">Tagihan Baru</div>
+
+<div class="logo">fingerspot<span>.io</span></div>
+
+<div class="head">
+<div>
+<b>Nama</b> : Test Aprilla 5<br>
+<b>Alamat</b> : Jl. Dewantara No.356, Yogyakarta
+</div>
+
+<div style="text-align:right">
+<b>Tanggal</b> : 26 January 2026<br>
+<b>Nomor Tagihan</b> : #45883
+</div>
+</div>
+
+<table>
+<tr>
+<th>Deskripsi</th>
+<th>Qty</th>
+<th>@ Harga</th>
+<th>Total Harga</th>
+</tr>
+
+<tr class="grp">
+<td class="l">Paket Layanan</td>
+<td></td><td></td><td></td>
+</tr>
+
+<tr>
+<td class="l">• Paket Perangkat Absensi (Starter)</td>
+<td>1</td>
+<td>135.000</td>
+<td>135.000</td>
+</tr>
+</table>
+
+<div class="row">
+
+<div>
+<b>Metode Pembayaran</b><br>
+Nomor Virtual Account 
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg">
+<div class="va">1401000000037265</div>
+</div>
+
+<div class="total">
+<div class="t subtotal"><span>SUBTOTAL</span><span>135.000</span></div>
+<div class="t"><span>DPP</span><span>121.622</span></div>
+<div class="t"><span>PPn 11%</span><span>13.378</span></div>
+<div class="t total-line"><span>TOTAL TAGIHAN</span><span>135.000</span></div>
+<div class="t pay-line"><span>TAGIHAN YANG PERLU DIBAYAR</span><span>135.000</span></div>
+</div>
+
+</div>
+
+<div class="sec">
+<h4>Keterangan</h4>
+
+<div class="info"><div>Kode Referensi</div><div>:</div>
+<div>APRIL - Aprilla QA Solo - CO</div></div>
+
+<div class="info"><div></div><div></div>
+<div>Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</div></div>
+
+<div class="info"><div>Jumlah Hari</div><div>:</div><div>54 Hari</div></div>
+<div class="info"><div>Jatuh Tempo</div><div>:</div><div>2026-03-21</div></div>
+<div class="info"><div>Catatan</div><div>:</div>
+<div>Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.</div></div>
+</div>
+
+<div class="sec">
+<h4>Informasi layanan yang Anda miliki</h4>
+
+<div class="serv">
+<div>• <b>Bonus</b></div>
+<div>: Aplikasi Mobile Owner(1), Fitur SOS(1)</div>
+</div>
+
+<div class="serv">
+<div>• <b>Paket Perangkat Absensi (Starter)</b></div>
+<div>: 1, Kuota Karyawan(100)</div>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

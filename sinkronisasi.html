@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preview Sinkronisasi Data Karyawan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-5xl px-4 py-8">
+
+      <!-- HEADER -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-semibold tracking-tight">
+          Preview Sinkronisasi Data Karyawan
+        </h1>
+        <p class="mt-1 text-sm text-slate-600">
+          Arah Sinkronisasi:
+          <span class="font-medium text-slate-800">
+            Web Fingerspot.io → Aplikasi Desktop
+          </span>
+        </p>
+        <p class="mt-2 text-xs text-slate-500">
+          Data di bawah ini akan <strong>diajukan ke proses persetujuan</strong>.
+          Data yang tidak dipilih akan muncul kembali pada sinkronisasi berikutnya.
+        </p>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="grid gap-4 md:grid-cols-3">
+
+        <!-- BARU -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start gap-3">
+            <input id="cb-new" type="checkbox" checked
+              class="mt-1 h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-700">Karyawan Baru</p>
+              <p class="mt-1 text-3xl font-semibold">12</p>
+              <p class="mt-1 text-xs text-slate-500">
+                Karyawan yang ada di web namun belum ada di desktop.
+              </p>
+              <p class="mt-2 text-xs text-slate-500 italic">
+                Jika tidak dipilih, data ini akan tetap muncul di sinkronisasi berikutnya.
+              </p>
+            </div>
+          </div>
+          <button data-open="modal-new"
+            class="mt-4 w-full rounded-xl border px-4 py-2 text-sm hover:bg-slate-50">
+            Lihat Detail
+          </button>
+        </div>
+
+        <!-- PERUBAHAN -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start gap-3">
+            <input id="cb-changed" type="checkbox" checked
+              class="mt-1 h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-700">Perubahan Data</p>
+              <p class="mt-1 text-3xl font-semibold">5</p>
+              <p class="mt-1 text-xs text-slate-500">
+                Perubahan data karyawan yang terdeteksi di web.
+              </p>
+              <p class="mt-2 text-xs text-slate-500 italic">
+                Perubahan tertentu dapat memerlukan persetujuan khusus (mis. karyawan kembar).
+              </p>
+            </div>
+          </div>
+          <button data-open="modal-changed"
+            class="mt-4 w-full rounded-xl border px-4 py-2 text-sm hover:bg-slate-50">
+            Lihat Detail
+          </button>
+        </div>
+
+        <!-- HAPUS -->
+        <div class="rounded-2xl border border-rose-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start gap-3">
+            <input id="cb-deleted" type="checkbox" checked
+              class="mt-1 h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-rose-700">Karyawan Dihapus</p>
+              <p class="mt-1 text-3xl font-semibold text-rose-700">3</p>
+              <p class="mt-1 text-xs text-slate-500">
+                Karyawan yang telah dihapus dari web.
+              </p>
+              <p class="mt-2 text-xs text-rose-600 italic">
+                Penghapusan bersifat permanen setelah disetujui.
+              </p>
+            </div>
+          </div>
+          <button data-open="modal-deleted"
+            class="mt-4 w-full rounded-xl border px-4 py-2 text-sm hover:bg-slate-50">
+            Lihat Detail
+          </button>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="mt-6 flex justify-end gap-3">
+        <button id="btn-cancel"
+          class="rounded-xl border px-4 py-2 text-sm hover:bg-slate-50">
+          Batal
+        </button>
+        <button id="btn-save"
+          class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+          Ajukan Sinkronisasi
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL PERUBAHAN (CONTOH PALING KRITIS) -->
+    <div id="modal-changed" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-slate-900/50" data-close="modal-changed"></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="w-full max-w-5xl rounded-2xl bg-white shadow-xl">
+
+          <div class="border-b px-6 py-4">
+            <h2 class="text-lg font-semibold">Detail Perubahan Data</h2>
+            <p class="mt-1 text-sm text-slate-600">
+              Perubahan tertentu akan masuk ke alur persetujuan khusus.
+            </p>
+          </div>
+
+          <div class="px-6 py-4 overflow-x-auto">
+            <table class="min-w-full text-sm border">
+              <thead class="bg-slate-50 text-xs uppercase text-slate-600">
+                <tr>
+                  <th class="px-3 py-2">Pilih</th>
+                  <th class="px-3 py-2">ID</th>
+                  <th class="px-3 py-2">Field</th>
+                  <th class="px-3 py-2">Sebelum</th>
+                  <th class="px-3 py-2">Sesudah</th>
+                  <th class="px-3 py-2">Jenis Perubahan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr>
+                  <td class="px-3 py-2"><input type="checkbox" checked></td>
+                  <td class="px-3 py-2 font-medium">EMP-010</td>
+                  <td class="px-3 py-2">Nama</td>
+                  <td class="px-3 py-2">Andi S</td>
+                  <td class="px-3 py-2">Andi Saputra</td>
+                  <td class="px-3 py-2">
+                    <span class="rounded bg-amber-50 px-2 py-1 text-xs text-amber-700">
+                      Potensi Karyawan Kembar
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2"><input type="checkbox" checked></td>
+                  <td class="px-3 py-2 font-medium">EMP-011</td>
+                  <td class="px-3 py-2">Jabatan</td>
+                  <td class="px-3 py-2">IT Support</td>
+                  <td class="px-3 py-2">IT</td>
+                  <td class="px-3 py-2">
+                    <span class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700">
+                      Perubahan Normal
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex justify-end border-t px-6 py-4">
+            <button data-close="modal-changed"
+              class="rounded-xl border px-4 py-2 text-sm hover:bg-slate-50">
+              Tutup
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- JS MINIMAL -->
+    <script>
+      document.querySelectorAll("[data-open]").forEach(btn => {
+        btn.onclick = () =>
+          document.getElementById(btn.dataset.open).classList.remove("hidden");
+      });
+      document.querySelectorAll("[data-close]").forEach(btn => {
+        btn.onclick = () =>
+          document.getElementById(btn.dataset.close).classList.add("hidden");
+      });
+    </script>
+  </body>
+</html>

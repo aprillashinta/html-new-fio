@@ -1,0 +1,537 @@
+<!--
+  Modal Verifikasi Wajah — versi lebih SOLID & rapi (tetap responsive)
+  Perubahan:
+  ✅ Tampilan dipadatkan (spacing lebih rapih)
+  ✅ Hapus icon 🎉 (kiri header)
+  ✅ Hapus opsi "Jangan tampilkan lagi"
+  ✅ Tambah code upload foto (HTML): hidden <input type="file"> + preview langsung (circle)
+  ✅ Tombol hanya: Upload Foto, Batal, Simpan Foto Verifikasi
+-->
+
+<style>
+  :root{
+    --navy:#0b1e33;
+    --blue-700:#376a93;
+    --blue-650:#3f729b;
+    --blue-600:#4c7fa6;
+
+    --bg:#ffffff;
+    --panel:#fbfdff;
+    --line: rgba(17,24,39,.08);
+
+    --text:#0f172a;
+    --muted:#6b7280;
+
+    --shadow: 0 18px 55px rgba(0,0,0,.26);
+    --shadow-soft: 0 10px 22px rgba(17,24,39,.08);
+
+    --r-xl: 30px;
+    --r-lg: 18px;
+    --r-md: 14px;
+  }
+
+  /* Backdrop */
+  .wc-backdrop{
+    position: fixed;
+    inset: 0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 16px;
+    background:
+      radial-gradient(900px 520px at 25% 20%, rgba(255,255,255,.10), transparent 55%),
+      radial-gradient(900px 520px at 70% 90%, rgba(255,255,255,.08), transparent 55%),
+      rgba(10, 23, 38, .70);
+    z-index: 9999;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  }
+  .wc-backdrop.is-open{ display:flex; }
+
+  /* Modal */
+  .wc-modal{
+    width: min(920px, 100%);
+    max-height: calc(100vh - 32px);
+    background: var(--bg);
+    border-radius: var(--r-xl);
+    overflow:hidden;
+    box-shadow: var(--shadow);
+    display:flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .wc-header{
+    background: linear-gradient(180deg, var(--blue-700), var(--blue-650));
+    color:#fff;
+    padding: 14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .wc-header__title{
+    line-height: 1.15;
+  }
+  .wc-header__title h2{
+    margin:0;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -.25px;
+  }
+  .wc-header__title p{
+    margin: 5px 0 0 0;
+    font-size: 12px;
+    opacity: .9;
+    font-weight: 600;
+  }
+  .wc-close{
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    color:#fff;
+    font-size: 18px;
+    font-weight: 900;
+    cursor:pointer;
+    display:grid;
+    place-items:center;
+    flex:0 0 auto;
+    user-select:none;
+  }
+  .wc-close:hover{ background: rgba(255,255,255,.18); }
+
+  /* Body */
+  .wc-body{
+    padding: 14px 16px 10px 16px;
+    overflow:auto;
+  }
+
+  .wc-content{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 14px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Top: avatar + actions + checklist */
+  .wc-top{
+    display:grid;
+    grid-template-columns: 190px 1fr;
+    gap: 14px;
+    align-items:center;
+  }
+
+  .wc-avatar{
+    width: 178px;
+    height: 178px;
+    border-radius: 999px;
+    border: 4px solid rgba(55,106,147,.30);
+    background: #f2f6fb;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    margin: 0 auto;
+  }
+  .wc-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .wc-avatar .wc-placeholder{
+    font-weight: 800;
+    color: var(--muted);
+    font-size: 12px;
+    text-align:center;
+    padding: 10px;
+  }
+
+  .wc-actions{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .wc-btn{
+    appearance:none;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 12px 16px;
+    font-weight: 900;
+    font-size: 14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap: 10px;
+    user-select:none;
+    line-height: 1;
+  }
+  .wc-btn--primary{
+    background: linear-gradient(180deg, #4c7fa6, #3f729b);
+    color:#fff;
+    box-shadow: 0 10px 16px rgba(76,127,166,.22);
+  }
+  .wc-btn--primary:hover{ filter: brightness(.97); }
+
+  .wc-btn--secondary{
+    background: #f1f6fb;
+    border-color: rgba(63,114,155,.22);
+    color: #3f6e92;
+  }
+  .wc-btn--secondary:hover{ background: #eaf2f9; }
+
+  .wc-ic{
+    width: 24px;
+    height: 24px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.18);
+    display:grid;
+    place-items:center;
+    font-size: 15px;
+  }
+
+  .wc-hint{
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .wc-check{
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: var(--r-md);
+    background: #f3f8fd;
+    border: 1px solid rgba(63,114,155,.18);
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+  }
+  .wc-item{
+    display:flex;
+    gap: 10px;
+    align-items:flex-start;
+    color: var(--text);
+    font-size: 12.5px;
+    line-height: 1.35;
+    font-weight: 650;
+  }
+  .wc-dot{
+    width: 18px; height:18px;
+    border-radius: 7px;
+    display:grid;
+    place-items:center;
+    background: rgba(34,197,94,.12);
+    border: 1px solid rgba(34,197,94,.20);
+    color: #16a34a;
+    font-weight: 900;
+    flex: 0 0 auto;
+    margin-top: 1px;
+    font-size: 12px;
+  }
+
+  /* Examples */
+  .wc-examples{
+    margin-top: 12px;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .wc-ex{
+    background:#fff;
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    overflow:hidden;
+    box-shadow: 0 8px 16px rgba(17,24,39,.06);
+  }
+  .wc-ex__head{
+    padding: 9px 10px;
+    background: #f7fbff;
+    border-bottom: 1px solid rgba(17,24,39,.07);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .wc-ex__head span:first-child{
+    font-weight: 900;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .wc-tag{
+    font-size: 10.5px;
+    font-weight: 900;
+    padding: 5px 8px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .wc-tag--ok{ background: rgba(34,197,94,.12); color:#166534; border-color: rgba(34,197,94,.18); }
+  .wc-tag--tip{ background: rgba(59,130,246,.10); color:#1d4ed8; border-color: rgba(59,130,246,.18); }
+  .wc-tag--bad{ background: rgba(239,68,68,.10); color:#991b1b; border-color: rgba(239,68,68,.18); }
+
+  .wc-ex__img{
+    width:100%;
+    aspect-ratio: 16/10;
+    object-fit:cover;
+    background:#eef2f7;
+    display:block;
+  }
+  .wc-ex__cap{
+    padding: 9px 10px 10px 10px;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+  .wc-ex__cap b{ color: var(--text); }
+
+  /* Footer */
+  .wc-footer{
+    padding: 10px 16px 14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap: 10px;
+    background: #fff;
+    border-top: 1px solid rgba(17,24,39,.06);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px){
+    .wc-top{ grid-template-columns: 1fr; }
+    .wc-actions{ justify-content:center; }
+    .wc-check{ grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px){
+    .wc-examples{ grid-template-columns: 1fr; }
+    .wc-footer{ flex-direction: column; }
+    .wc-footer .wc-btn{ width:100%; justify-content:center; }
+  }
+</style>
+
+<!-- Demo open -->
+<button class="wc-btn wc-btn--primary" type="button" onclick="openWCModal()">
+  <span class="wc-ic">✅</span> Buka Modal Verifikasi Wajah
+</button>
+
+<div class="wc-backdrop" id="wcBackdrop" role="dialog" aria-modal="true" aria-labelledby="wcTitle">
+  <div class="wc-modal">
+    <div class="wc-header">
+      <div class="wc-header__title">
+        <h2 id="wcTitle">Verifikasi Wajah untuk Absensi</h2>
+        <p>Upload foto wajah Anda (JPG/PNG, maksimal 100KB)</p>
+      </div>
+      <div class="wc-close" title="Tutup" onclick="closeWCModal()">✕</div>
+    </div>
+
+    <div class="wc-body">
+      <div class="wc-content">
+        <div class="wc-top">
+          <!-- Preview circle -->
+          <div class="wc-avatar" id="wcAvatar">
+            <img id="wcPreviewImg" alt="Preview Foto" style="display:none;" />
+            <div class="wc-placeholder" id="wcPlaceholder">
+              Belum ada foto<br/>Silakan upload
+            </div>
+          </div>
+
+          <!-- Actions + checklist -->
+          <div>
+            <div class="wc-actions">
+              <!-- Hidden input file (HTML upload) -->
+              <input
+                id="wcFileInput"
+                type="file"
+                accept="image/png,image/jpeg"
+                style="display:none"
+              />
+
+              <button class="wc-btn wc-btn--primary" type="button" onclick="document.getElementById('wcFileInput').click()">
+                <span class="wc-ic">📤</span> Upload Foto
+              </button>
+
+              <button class="wc-btn wc-btn--secondary" type="button" onclick="resetWcPhoto()">
+                Reset
+              </button>
+            </div>
+
+            <div class="wc-hint">
+              Pastikan wajah <b>lurus</b>, <b>terang</b>, dan <b>dahi–dagu tidak terpotong</b>.
+            </div>
+
+            <div class="wc-check">
+              <div class="wc-item"><span class="wc-dot">✓</span><span>Wajah jelas & <b>tidak blur</b></span></div>
+              <div class="wc-item"><span class="wc-dot">✓</span><span>Cahaya <b>dari depan</b> (hindari backlight)</span></div>
+              <div class="wc-item"><span class="wc-dot">✓</span><span>Tanpa <b>masker/kacamata hitam/topi</b></span></div>
+              <div class="wc-item"><span class="wc-dot">✓</span><span>Latar <b>polos</b> & tidak ramai</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="wc-examples">
+          <div class="wc-ex">
+            <div class="wc-ex__head">
+              <span>Contoh Benar</span>
+              <span class="wc-tag wc-tag--ok">✅ OK</span>
+            </div>
+            <img class="wc-ex__img"
+              src='data:image/svg+xml;utf8,
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560">
+  <rect width="900" height="560" fill="%23ffffff"/>
+  <rect x="40" y="40" width="820" height="480" rx="26" fill="%23fbfdff" stroke="%23e2e8f0"/>
+  <circle cx="255" cy="290" r="140" fill="%23f5d0b5"/>
+  <path d="M145 260c10-100 80-150 150-150 80 0 140 60 150 140-60-22-110-30-150-30-55 0-95 14-150 40z" fill="%23111827"/>
+  <circle cx="215" cy="295" r="12" fill="%23111827"/>
+  <circle cx="295" cy="295" r="12" fill="%23111827"/>
+  <path d="M255 315c-5 20-5 35 0 52" stroke="%239ca3af" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M215 405c30 22 50 22 80 0" stroke="%239ca3af" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <text x="480" y="240" font-family="Arial" font-size="32" fill="%23376a93" font-weight="700">Wajah lurus</text>
+  <text x="480" y="285" font-family="Arial" font-size="24" fill="%236b7280">Terang & jelas</text>
+  <text x="480" y="330" font-family="Arial" font-size="24" fill="%236b7280">Latar polos</text>
+</svg>'
+              alt="Contoh foto benar">
+            <div class="wc-ex__cap"><b>Ideal:</b> wajah lurus, terang, dan fokus.</div>
+          </div>
+
+          <div class="wc-ex">
+            <div class="wc-ex__head">
+              <span>Pencahayaan</span>
+              <span class="wc-tag wc-tag--tip">💡 Tips</span>
+            </div>
+            <img class="wc-ex__img"
+              src='data:image/svg+xml;utf8,
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560">
+  <rect width="900" height="560" fill="%23ffffff"/>
+  <rect x="40" y="40" width="820" height="480" rx="26" fill="%23fbfdff" stroke="%23e2e8f0"/>
+  <circle cx="300" cy="290" r="140" fill="%23f5d0b5"/>
+  <path d="M190 260c10-100 80-150 150-150 80 0 140 60 150 140-60-22-110-30-150-30-55 0-95 14-150 40z" fill="%23111827"/>
+  <circle cx="260" cy="295" r="12" fill="%23111827"/>
+  <circle cx="340" cy="295" r="12" fill="%23111827"/>
+  <path d="M300 315c-5 20-5 35 0 52" stroke="%239ca3af" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M260 405c30 22 50 22 80 0" stroke="%239ca3af" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="650" cy="210" r="18" fill="%23f59e0b"/>
+  <path d="M650 235v60" stroke="%23f59e0b" stroke-width="8" stroke-linecap="round"/>
+  <path d="M620 275h60" stroke="%23f59e0b" stroke-width="8" stroke-linecap="round"/>
+  <text x="520" y="330" font-family="Arial" font-size="28" fill="%23376a93" font-weight="700">Cahaya dari depan</text>
+  <text x="520" y="370" font-family="Arial" font-size="22" fill="%236b7280">hindari backlight</text>
+</svg>'
+              alt="Tips pencahayaan">
+            <div class="wc-ex__cap"><b>Disarankan:</b> cahaya dari depan agar detail wajah terbaca.</div>
+          </div>
+
+          <div class="wc-ex">
+            <div class="wc-ex__head">
+              <span>Contoh Salah</span>
+              <span class="wc-tag wc-tag--bad">❌ Hindari</span>
+            </div>
+            <img class="wc-ex__img"
+              src='data:image/svg+xml;utf8,
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="%23111827"/>
+      <stop offset="1" stop-color="%230b1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="560" fill="url(%23g)"/>
+  <rect x="40" y="40" width="820" height="480" rx="26" fill="rgba(255,255,255,0.05)" stroke="%23ef4444"/>
+  <circle cx="270" cy="300" r="70" fill="%23f5d0b5" opacity="0.9"/>
+  <circle cx="430" cy="300" r="70" fill="%23f5d0b5" opacity="0.75"/>
+  <circle cx="590" cy="300" r="70" fill="%23f5d0b5" opacity="0.6"/>
+  <text x="130" y="140" font-family="Arial" font-size="34" fill="%23fecaca" font-weight="700">Background ramai</text>
+  <text x="130" y="185" font-family="Arial" font-size="24" fill="%23fecaca">wajah tidak fokus / banyak orang</text>
+</svg>'
+              alt="Contoh foto salah">
+            <div class="wc-ex__cap"><b>Hindari:</b> background ramai, foto gelap, atau blur.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wc-footer">
+      <button class="wc-btn wc-btn--secondary" type="button" onclick="closeWCModal()">Batal</button>
+      <button class="wc-btn wc-btn--primary" type="button" onclick="saveWcPhoto()">
+        <span class="wc-ic">💾</span> Simpan Foto Verifikasi
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openWCModal(){ document.getElementById('wcBackdrop').classList.add('is-open'); }
+  function closeWCModal(){ document.getElementById('wcBackdrop').classList.remove('is-open'); }
+
+  // close on backdrop click
+  document.getElementById('wcBackdrop').addEventListener('click', function(e){
+    if(e.target === this) closeWCModal();
+  });
+
+  // close on ESC
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeWCModal();
+  });
+
+  // ===== Upload Foto (HTML) =====
+  const wcInput = document.getElementById('wcFileInput');
+  const wcImg = document.getElementById('wcPreviewImg');
+  const wcPlaceholder = document.getElementById('wcPlaceholder');
+
+  // contoh constraint: max 100KB (sesuaikan jika perlu)
+  const MAX_BYTES = 100 * 1024;
+
+  wcInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+
+    // validasi tipe
+    const okType = ['image/jpeg','image/png'].includes(file.type);
+    if(!okType){
+      alert('Format tidak didukung. Gunakan JPG atau PNG.');
+      resetWcPhoto();
+      return;
+    }
+
+    // validasi ukuran
+    if(file.size > MAX_BYTES){
+      alert('Ukuran file melebihi 100KB. Silakan kompres atau gunakan foto lain.');
+      resetWcPhoto();
+      return;
+    }
+
+    // tampilkan preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      wcImg.src = reader.result;
+      wcImg.style.display = 'block';
+      wcPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function resetWcPhoto(){
+    wcInput.value = '';
+    wcImg.src = '';
+    wcImg.style.display = 'none';
+    wcPlaceholder.style.display = 'block';
+  }
+
+  // Demo save handler (integrasikan ke API Anda)
+  function saveWcPhoto(){
+    const file = wcInput.files && wcInput.files[0];
+    if(!file){
+      alert('Silakan upload foto terlebih dahulu.');
+      return;
+    }
+
+    // Contoh pembuatan FormData untuk dikirim ke server:
+    // const fd = new FormData();
+    // fd.append('photo', file);
+    // fetch('/api/upload-face-photo', { method:'POST', body: fd });
+
+    alert('Foto siap disimpan (demo). Integrasikan ke endpoint upload Anda.');
+  }
+</script>
