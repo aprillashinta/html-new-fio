@@ -6,12 +6,12 @@
     <title>Invoice Fingerspot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --blue-main: #5f9fd6; --blue-dark: #0b4fa2; --soft-bg: #e9f2fb; --border-clr: #c9def3; }
-        body { background: #1f1f1f; font-family: Arial, sans-serif; font-size: 11.5px; padding: 40px 0; }
+        :root { --blue-main: #5f9fd6; --blue-dark: #0b4fa2; --soft-bg: #e9f2fb; --border-clr: #c9def3; --blue-soft:#edf5fc; }
+        body { background: #1f1f1f; font-family: Arial, sans-serif; font-size: 11.5px; padding: 30px 0; }
         .inv-card { width: 210mm; background: #fff; margin: auto; position: relative; padding-bottom: 40px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .top-bar { height: 12px; background: var(--blue-main); width: 100%; }
-        .ribbon { position: absolute; top: 15px; right: -45px; width: 170px; background: var(--blue-dark); color: #fff; 
-                   font-size: 11px; font-weight: 700; text-align: center; padding: 5px 0; transform: rotate(35deg); z-index: 10; }
+        .top-bar { height: 15px; background: var(--blue-main); width: 100%; }
+        .ribbon { position: absolute; top: 25px; right: -35px; width: 170px; background: var(--blue-dark); color: #fff; 
+                   font-size: 13px; font-weight: 700; text-align: center; padding: 5px 0; transform: rotate(35deg); z-index: 10; }
         .logo { font-size: 32px; font-weight: 700; color: #666; text-align: center; margin: 25px 0 15px; }
         .logo span { color: var(--blue-main); }
         .content-area { padding: 0 50px; }
@@ -20,8 +20,7 @@
         .table-custom td { border-color: var(--border-clr); padding: 5px 10px; }
         .bg-group{background: linear-gradient(90deg,#eef5fd,#e3effc); color:#0b4fa2; font-weight:700;}
 
-        /* .bg-group { background-color: var(--soft-bg) !important; font-weight: 700; }
-         */
+        /* .bg-group { background-color: var(--soft-bg) !important; font-weight: 700; }*/
         .section-title { color: var(--blue-main); font-weight: 700; border-top: 1px solid var(--border-clr); padding-top: 10px; margin-top: 15px; margin-bottom: 5px; }
         .lbl-col { width: 125px; }
         .lbl-col-short { width: 180px; }
@@ -32,6 +31,7 @@
         @media print { body { background: none; padding: 0; } .inv-card { box-shadow: none; width: 100%; } .no-print { display: none; } }
     </style>
 </head>
+<body>
 
     <div class="text-center mb-3 no-print">
         <button class="btn btn-primary fw-bold px-5" onclick="window.print()">Preview PDF</button>
@@ -40,8 +40,7 @@
     <div class="inv-card overflow-hidden">
         <div class="top-bar"></div>
         <div class="ribbon shadow-sm">Tagihan Baru</div>
-
-        <div class="logo">fingerspot<span>.io</span></div>
+        <div class="logo mb-3"><img src="../src/logo-fio.png" alt="Fingerspot.io" style="height:35px;"></div>
 
         <div class="content-area">
             <div class="row g-0 mb-3">
@@ -65,7 +64,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-group"><td colspan="4" class="text-start">Paket Layanan</td></tr>
+                    <tr class="bg-group"><td colspan="4" class="text-start" style="background: var(--blue-soft)">Paket Layanan</td></tr>
                     <tr class="align-middle">
                         <td class="">&bull; Paket Perangkat Absensi (Starter)</td>
                         <td class="text-center">1</td>
@@ -79,7 +78,7 @@
                 <div class="col-7">
                     <div class="fw-bold mb-1" style="font-size: 13px;">Metode Pembayaran</div>
                     <div class="d-flex align-items-center">
-                        <span>Nomor Virtual Account</span>
+                        <span style="font-size: 13px;">Nomor Virtual Account</span>
                         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" style="height:14px; margin-left:10px;">
                     </div>
                     <div class="fw-bold mt-1" style="font-size: 16px; letter-spacing: 0.5px;">1401000000037265</div>
@@ -136,20 +135,15 @@
                         Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.
                     </div>
                 </div>
-
-
-            <!-- <div class="section-title">Keterangan</div>
-            <div class="d-flex"><div class="lbl-col">Kode Referensi</div><div class="px-1">:</div><div class="flex-fill fw-bold text-uppercase">APRIL - Aprilla QA Solo - CO</div></div>
-            <div class="d-flex"><div class="lbl-col"></div><div class="px-1"></div><div class="flex-fill">Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</div></div>
-            <div class="d-flex"><div class="lbl-col">Jumlah Hari</div><div class="px-1">:</div><div class="flex-fill">54 Hari</div></div>
-            <div class="d-flex"><div class="lbl-col">Jatuh Tempo</div><div class="px-1">:</div><div class="flex-fill">2026-03-21</div></div>
-            <div class="d-flex"><div class="lbl-col">Catatan</div><div class="px-1">:</div><div class="flex-fill">Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.</div></div> -->
-
             <div class="section-title">Informasi layanan yang Anda miliki</div>
             <div class="d-flex"><div class="lbl-col-short fw-bold">&bull; Bonus</div><div class="px-1">:</div><div class="flex-fill">Aplikasi Mobile Owner(1), Fitur SOS(1)</div></div>
             <div class="d-flex"><div class="lbl-col-short fw-bold">&bull; Paket Perangkat Absensi (Starter)</div><div class="px-1">:</div><div class="flex-fill">1, Kuota Karyawan(100)</div></div>
         </div>
     </div>
-
+    
+    <div class="footer-info">
+        <div>Printed at 2026-01-26 22:18:36</div>
+        <div>Page 1 / 1</div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Fingerspot - Final</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            /* Palet Warna Hasil Sampling dari Gambar */
+            --fingerspot-blue: #4a86c6;       /* Warna utama logo & header tabel */
+            --fingerspot-dark: #204d74;       /* Warna ribbon & teks berat */
+            --table-header-bg: #5b9bd5;       /* Biru header tabel */
+            --table-sub-bg: #ddebf7;          /* Biru muda baris "Paket Layanan" */
+            --table-border: #9cc2e5;          /* Warna garis border tabel */
+            --text-color: #000;               /* Warna teks hitam pekat */
+            --label-width: 110px;
+        }
+        
+        body { 
+            background: #555; 
+            font-family: Arial, sans-serif; 
+            font-size: 11px; 
+            padding: 20px 0;
+            margin: 0;
+        }
+
+        .page-container { 
+            width: 210mm; 
+            min-height: 297mm;
+            background: #fff; 
+            margin: auto; 
+            position: relative; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.5); 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. Bar Biru Atas & Bawah */
+        .bar-top { height: 13px; background: var(--fingerspot-dark); width: 100%; } /* Sedikit lebih gelap sesuai gambar */
+        .bar-bottom { height: 13px; background: var(--fingerspot-dark); width: 100%; position: absolute; bottom: 0; }
+
+        /* 2. Ribbon "Tagihan Baru" */
+        .ribbon-wrapper {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .ribbon { 
+            position: absolute; 
+            top: 25px; 
+            right: -35px; 
+            width: 150px; 
+            background: #0056b3; /* Biru standar ribbon */
+            color: #fff; 
+            font-size: 11px; 
+            font-weight: bold; 
+            text-align: center; 
+            padding: 5px 0; 
+            transform: rotate(45deg); 
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+
+        /* 3. Logo */
+        .header-section { text-align: center; padding-top: 25px; margin-bottom: 20px; }
+        .logo-text { font-size: 32px; font-weight: 700; color: #555; letter-spacing: -0.5px; }
+        .logo-text span { color: var(--fingerspot-blue); }
+
+        .content-padding { padding: 0 45px; }
+
+        /* 4. Grid Informasi Header */
+        .info-table td { padding: 1px 0; vertical-align: top; }
+        .info-label { font-weight: bold; width: 60px; }
+        .info-sep { width: 10px; text-align: center; }
+        
+        /* 5. Tabel Utama (Exact Match) */
+        .custom-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .custom-table th { 
+            background-color: var(--table-header-bg) !important; 
+            color: white; 
+            padding: 6px 10px; 
+            border: 1px solid white; /* Border putih antar header */
+            border-right: 1px solid var(--table-border);
+            text-align: center;
+            font-weight: bold;
+        }
+        .custom-table th:last-child { border-right: none; }
+        
+        .custom-table td { 
+            border: 1px solid var(--table-border); /* Border biru muda */
+            padding: 5px 10px; 
+            color: var(--text-color);
+        }
+
+        /* Baris Paket Layanan */
+        .row-subheader { 
+            background-color: var(--table-sub-bg) !important; 
+            font-weight: bold;
+            color: #000;
+        }
+        .row-subheader td { border-top: none; }
+
+        /* 6. Bagian Total & Pembayaran */
+        .payment-grid { display: flex; justify-content: space-between; margin-top: 15px; }
+        .payment-left { width: 55%; }
+        .payment-right { width: 40%; }
+        
+        .summary-table { width: 100%; }
+        .summary-table td { padding: 2px 0; }
+        .text-blue-link { color: #337ab7; text-decoration: none; font-weight: bold; font-size: 12px; }
+
+        .line-separator { border-top: 1px solid var(--table-header-bg); margin: 5px 0; }
+
+        /* 7. Keterangan & Layanan */
+        .section-head { 
+            color: var(--table-header-bg); 
+            font-weight: bold; 
+            font-size: 11px;
+            margin-top: 15px; 
+            margin-bottom: 5px; 
+        }
+
+        .info-list-table { width: 100%; }
+        .info-list-table td { vertical-align: top; padding-bottom: 2px; }
+        .label-col { width: 100px; font-weight: bold; } /* Menyesuaikan lebar label */
+        
+        /* Footer */
+        .footer-info {
+            position: absolute;
+            bottom: 25px;
+            left: 45px;
+            right: 45px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #000;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Print Settings */
+        @media print { 
+            body { background: none; padding: 0; } 
+            .page-container { margin: 0; width: 100%; box-shadow: none; border: none; } 
+            .no-print { display: none; }
+            /* Paksa cetak warna background */
+            .bar-top, .bar-bottom, .ribbon, th, .row-subheader {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="text-center mb-4 no-print">
+        <button class="btn btn-primary btn-sm fw-bold px-4" onclick="window.print()">Cetak PDF</button>
+    </div>
+
+    <div class="page-container">
+        <div class="bar-top"></div>
+        
+        <div class="ribbon-wrapper">
+            <div class="ribbon">Tagihan Baru</div>
+        </div>
+
+        <div class="header-section">
+            <div class="logo-text">fingerspot<span>.io</span></div>
+        </div>
+
+        <div class="content-padding">
+            <div class="row">
+                <div class="col-7">
+                    <table class="info-table">
+                        <tr><td class="info-label">Nama</td><td class="info-sep">:</td><td>Test Aprilla 5</td></tr>
+                        <tr><td class="info-label">Alamat</td><td class="info-sep">:</td><td>Jl. Dewantara No.356, Yogyakarta</td></tr>
+                    </table>
+                </div>
+                <div class="col-5 ps-4">
+                    <table class="info-table">
+                        <tr><td style="width: 90px; font-weight: bold;">Tanggal</td><td class="info-sep">:</td><td>26 January 2026</td></tr>
+                        <tr><td style="width: 90px; font-weight: bold;">Nomor Tagihan</td><td class="info-sep">:</td><td>#45883</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div style="height: 15px;"></div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th style="width: 55%; text-align: center;">Deskripsi</th>
+                        <th style="width: 10%;">Qty</th>
+                        <th style="width: 15%;">@ Harga</th>
+                        <th style="width: 20%;">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-subheader">
+                        <td colspan="4">Paket Layanan</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 20px;">• Paket Perangkat Absensi (Starter)</td>
+                        <td class="text-center">1</td>
+                        <td class="text-end">135.000</td>
+                        <td class="text-end">135.000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="payment-grid">
+                <div class="payment-left">
+                    <div class="fw-bold mb-1">Metode Pembayaran</div>
+                    <div class="d-flex align-items-center mb-1">
+                        <span style="margin-right: 5px;">Nomor Virtual Account</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" height="12">
+                    </div>
+                    <div class="fw-bold" style="font-size: 14px;">1401000000037265</div>
+                </div>
+                <div class="payment-right">
+                    <table class="summary-table">
+                        <tr><td class="fw-bold">SUBTOTAL</td><td class="text-end fw-bold">135.000</td></tr>
+                        <tr><td>DPP</td><td class="text-end">121.622</td></tr>
+                        <tr><td>PPn 11%</td><td class="text-end">13.378</td></tr>
+                        <tr><td class="fw-bold">TOTAL TAGIHAN</td><td class="text-end fw-bold">135.000</td></tr>
+                        <tr><td colspan="2"><div class="line-separator"></div></td></tr>
+                        <tr>
+                            <td class="fw-bold" style="width: 60%; vertical-align: top;">TAGIHAN YANG PERLU DIBAYAR</td>
+                            <td class="text-end fw-bold" style="vertical-align: top;">135.000</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-head">Keterangan</div>
+            <table class="info-list-table">
+                <tr><td class="label-col">Kode Referensi</td><td>:</td><td>APRIL - Aprilla QA Solo - CO</td></tr>
+                <tr><td></td><td></td><td>Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</td></tr>
+                <tr><td class="label-col">Jumlah Hari</td><td>:</td><td>54 Hari</td></tr>
+                <tr><td class="label-col">Jatuh Tempo</td><td>:</td><td>2026-03-21</td></tr>
+                <tr><td class="label-col">Catatan</td><td>:</td><td>Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.</td></tr>
+            </table>
+
+            <div class="section-head">Informasi layanan yang Anda miliki</div>
+            <table class="info-list-table">
+                <tr>
+                    <td style="width: 160px; font-weight: bold;">• Bonus</td>
+                    <td style="width: 10px;">:</td>
+                    <td>Aplikasi Mobile Owner(1), Fitur SOS(1)</td>
+                </tr>
+                <tr>
+                    <td style="width: 160px; font-weight: bold;">• Paket Perangkat Absensi<br>(Starter)</td>
+                    <td>:</td>
+                    <td style="vertical-align: top;">1, Kuota Karyawan(100)</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer-info">
+            <div>Printed at 2026-01-26 22:18:36</div>
+            <div>Page 1 / 1</div>
+        </div>
+
+        <div class="bar-bottom"></div>
+    </div>
+
+</body>
+</html>
