@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Fingerspot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --blue: #5f9fd6;
+            --soft: #e9f2fb;
+            --line: #c9def3;
+        }
+
+        body {
+            background: #1f1f1f;
+            padding: 34px;
+            font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .actions {
+            text-align: center;
+            margin-bottom: 14px
+        }
+
+        .inv {
+            width: 210mm;
+            background: #fff;
+            margin: auto;
+            position: relative;
+            padding-bottom: 34px;
+        }
+
+        .top {
+            height: 12px;
+            background: var(--blue)
+        }
+
+        .badge-fp {
+            position: absolute;
+            top: 10px;
+            right: -58px;
+            width: 170px;
+            height: 30px;
+            background: #0b4fa2;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(35deg)
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 34px;
+            font-weight: 700;
+            color: #666;
+            margin: 20px 0 10px;
+        }
+
+        .logo span {
+            color: var(--blue)
+        }
+
+        .container {
+            padding: 0 46px
+        }
+
+        .header-row {
+            margin-bottom: 10px
+        }
+
+        .table th {
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+            padding: 6px;
+            font-weight: 600;
+        }
+
+        .table td {
+            border-color: var(--line);
+            padding: 6px;
+        }
+
+        .grp {
+            background: var(--soft);
+            font-weight: 700
+        }
+
+        .pay b {
+            font-weight: 700
+        }
+
+        .va {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 4px;
+            letter-spacing: .3px
+        }
+
+        .subtotal {
+            font-weight: 800
+        }
+
+        .total-line {
+            border-top: 1px solid var(--line);
+            padding-top: 5px;
+            margin-top: 5px;
+            font-weight: 700
+        }
+
+        .pay-line {
+            font-weight: 800
+        }
+
+        .sec {
+            border-top: 1px solid var(--line);
+            padding-top: 10px;
+            margin-top: 12px;
+            font-size: 11px
+        }
+
+        .sec h6 {
+            color: var(--blue);
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 2px
+        }
+
+        .info-row .lbl {
+            width: 120px
+        }
+
+        .info-row .colon {
+            width: 10px
+        }
+
+        .info-row .val {
+            flex: 1
+        }
+
+        .service-row {
+            display: flex;
+            margin-bottom: 2px
+        }
+
+        .service-row .lbl {
+            width: 170px
+        }
+
+        .service-row .colon {
+            width: 10px
+        }
+
+        img {
+            height: 18px;
+            margin-left: 4px
+        }
+
+        @page {
+            size: A4;
+            margin: 12mm
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0
+            }
+
+            .actions {
+                display: none
+            }
+
+            .inv {
+                width: 100%
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="actions">
+        <button class="btn btn-primary fw-bold px-4" onclick="window.print()">Preview PDF</button>
+    </div>
+
+    <div class="inv">
+
+        <div class="top"></div>
+        <div class="badge-fp">Tagihan Baru</div>
+
+        <div class="logo">fingerspot<span>.io</span></div>
+
+        <div class="container">
+
+            <div class="row header-row" style="font-size:11px;line-height:1.5;margin-top:4px">
+
+                <!-- KIRI -->
+                <div class="col-6 p-0">
+
+                    <div class="d-flex">
+                        <div style="width:50px;font-weight:700">Nama</div>
+                        <div style="width:8px">:</div>
+                        <div>Test Aprilla 5</div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div style="width:50px;font-weight:700">Alamat</div>
+                        <div style="width:8px">:</div>
+                        <div>Jl. Dewantara No.356, Yogyakarta</div>
+                    </div>
+
+                </div>
+                <div class="col-6 p-0">
+
+                    <div class="d-flex">
+                        <div style="width:95px;font-weight:700">Tanggal</div>
+                        <div style="width:8px">:</div>
+                        <div>26 January 2026</div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div style="width:95px;font-weight:700">Nomor Tagihan</div>
+                        <div style="width:8px">:</div>
+                        <div>#45883</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <table class="table table-bordered mb-2">
+                <thead>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-center">@ Harga</th>
+                        <th class="text-center">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="grp">
+                        <td>Paket Layanan</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>• Paket Perangkat Absensi (Starter)</td>
+                        <td class="text-center">1</td>
+                        <td class="text-center">135.000</td>
+                        <td class="text-center">135.000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row mb-2">
+
+                <div class="col pay" style="font-size:15px">
+
+                    <div style="font-weight:700">Metode Pembayaran</div>
+
+                    <div class="d-flex align-items-center">
+                        <div>Nomor Virtual Account</div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" height="16"
+                            class="ms-3">
+                    </div>
+
+                    <div class="va" style="margin-top:4px">1401000000037265</div>
+
+                </div>
+
+
+                <div class="col-4">
+                    <div class="d-flex justify-content-between subtotal">
+                        <span>SUBTOTAL</span><span>135.000</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>DPP</span><span>121.622</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>PPn 11%</span><span>13.378</span>
+                    </div>
+                    <div class="d-flex justify-content-between total-line">
+                        <span>TOTAL TAGIHAN</span><span>135.000</span>
+                    </div>
+                    <div class="d-flex justify-content-between pay-line">
+                        <span>TAGIHAN YANG PERLU DIBAYAR</span><span>135.000</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sec">
+
+                <h6>Keterangan</h6>
+
+                <div class="info-row">
+                    <div class="lbl">Kode Referensi</div>
+                    <div class="colon">:</div>
+                    <div class="val">APRIL - Aprilla QA Solo - CO</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="lbl"></div>
+                    <div class="colon"></div>
+                    <div class="val">Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="lbl">Jumlah Hari</div>
+                    <div class="colon">:</div>
+                    <div class="val">54 Hari</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="lbl">Jatuh Tempo</div>
+                    <div class="colon">:</div>
+                    <div class="val">2026-03-21</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="lbl">Catatan</div>
+                    <div class="colon">:</div>
+                    <div class="val">
+                        Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum
+                        masa jatuh tempo.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sec">
+
+                <h6>Informasi layanan yang Anda miliki</h6>
+
+                <div class="service-row">
+                    <div class="lbl">• <b>Bonus</b></div>
+                    <div class="colon">:</div>
+                    <div>Aplikasi Mobile Owner(1), Fitur SOS(1)</div>
+                </div>
+
+                <div class="service-row">
+                    <div class="lbl">• <b>Paket Perangkat Absensi (Starter)</b></div>
+                    <div class="colon">:</div>
+                    <div>1, Kuota Karyawan(100)</div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -2,36 +2,37 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Invoice</title>
-
+<title>Invoice Fingerspot</title>
 <style>
 body{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:#1f1f1f;
     padding:40px;
-    font-size:12px;
+    font-size:12px
 }
-
 .inv{
     width:860px;
     background:#fff;
     margin:auto;
     position:relative;
-    padding-bottom:40px;
+    padding-bottom:40px
 }
 
-.top{
-    height:14px;
-    background:#6fa8dc;
+/* fingerspot blue */
+:root{
+    --blue:#6fa8dc;
+    --blue-soft:#edf5fc;
+    --line:#cfe2f3;
 }
 
-/* ribbon */
+.top{height:12px;background:var(--blue)}
+
 .badge{
     position:absolute;
-    top:12px;
-    right:-55px;
-    width:160px;
-    height:28px;
+    top:10px;
+    right:-60px;
+    width:170px;
+    height:30px;
     background:#0b4fa2;
     color:#fff;
     font-size:11px;
@@ -39,121 +40,125 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
-    transform:rotate(35deg);
+    transform:rotate(35deg)
 }
 
-/* logo */
 .logo{
     text-align:center;
     font-size:36px;
     font-weight:700;
     color:#666;
-    margin:22px 0 10px;
+    margin:22px 0 12px
 }
-.logo span{color:#6fa8dc}
+.logo span{color:var(--blue)}
 
-/* header info */
 .head{
     display:flex;
     justify-content:space-between;
     padding:0 50px;
     font-size:12.5px;
-    line-height:1.8;
+    line-height:1.9
 }
 
-/* table */
 table{
     width:88%;
     margin:18px auto;
-    border-collapse:collapse;
+    border-collapse:collapse
 }
 
 th{
-    background:#6fa8dc;
+    background:var(--blue);
     color:#fff;
     font-weight:600;
-    padding:7px;
-    border:1px solid #6fa8dc;
+    padding:8px;
+    border:1px solid var(--blue)
 }
 
 td{
-    padding:7px;
-    border:1px solid #d6e6f7;
-    text-align:center;
+    padding:8px;
+    border:1px solid var(--line);
+    text-align:center
 }
 
 .l{text-align:left}
 
 .grp{
-    background:#eef6fd;
-    font-weight:600;
+    background:var(--blue-soft);
+    font-weight:700
 }
 
-/* payment + total */
 .row{
     width:88%;
-    margin:20px auto;
+    margin:22px auto;
     display:flex;
-    justify-content:space-between;
+    justify-content:space-between
+}
+
+.pay{
+    line-height:1.6
 }
 
 .va{
-    font-size:14px;
+    font-size:16px;
     font-weight:700;
-    margin-top:4px;
+    margin-top:6px;
+    letter-spacing:.4px
 }
 
-.total{
-    width:300px;
-}
+.total{width:320px}
 
 .t{
     display:flex;
     justify-content:space-between;
-    padding:3px 0;
+    padding:4px 0
 }
 
-.subtotal{font-weight:600}
+.subtotal{
+    font-weight:800;
+    color:#000
+}
 
 .total-line{
     margin-top:6px;
     padding-top:6px;
-    border-top:1px solid #cfe2f3;
-    font-weight:600;
+    border-top:1px solid var(--line);
+    font-weight:700
 }
 
 .pay-line{
-    font-weight:700;
-    font-size:13px;
+    font-weight:800
 }
 
-/* bottom sections */
 .sec{
     width:88%;
     margin:auto;
-    border-top:1px solid #cfe2f3;
-    padding-top:14px;
+    border-top:1px solid var(--line);
+    padding-top:14px
 }
 
 h4{
-    color:#6fa8dc;
+    color:var(--blue);
     font-size:13px;
-    margin:6px 0 10px;
+    margin:6px 0 10px
 }
 
 .info{
     display:grid;
     grid-template-columns:140px 10px auto;
-    margin-bottom:4px;
+    margin-bottom:4px
 }
 
 .serv{
     display:grid;
     grid-template-columns:200px auto;
-    margin-bottom:6px;
+    margin-bottom:6px
 }
 
-img{height:16px;vertical-align:middle}
+img{
+    height:18px;
+    vertical-align:middle;
+    margin-left:6px
+}
 </style>
 </head>
 
@@ -170,7 +175,6 @@ img{height:16px;vertical-align:middle}
 <b>Nama</b> : Test Aprilla 5<br>
 <b>Alamat</b> : Jl. Dewantara No.356, Yogyakarta
 </div>
-
 <div style="text-align:right">
 <b>Tanggal</b> : 26 January 2026<br>
 <b>Nomor Tagihan</b> : #45883
@@ -200,9 +204,9 @@ img{height:16px;vertical-align:middle}
 
 <div class="row">
 
-<div>
+<div class="pay">
 <b>Metode Pembayaran</b><br>
-Nomor Virtual Account 
+Nomor Virtual Account
 <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg">
 <div class="va">1401000000037265</div>
 </div>
@@ -246,7 +250,6 @@ Nomor Virtual Account
 </div>
 
 </div>
-
 </div>
 </body>
 </html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Fingerspot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --blue-main: #5f9fd6; --blue-dark: #0b4fa2; --soft-bg: #e9f2fb; --border-clr: #c9def3; }
+        body { background: #1f1f1f; font-family: Arial, sans-serif; font-size: 11.5px; padding: 40px 0; }
+        .inv-card { width: 210mm; background: #fff; margin: auto; position: relative; padding-bottom: 40px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .top-bar { height: 12px; background: var(--blue-main); width: 100%; }
+        .ribbon { position: absolute; top: 15px; right: -45px; width: 170px; background: var(--blue-dark); color: #fff; 
+                   font-size: 11px; font-weight: 700; text-align: center; padding: 5px 0; transform: rotate(35deg); z-index: 10; }
+        .logo { font-size: 32px; font-weight: 700; color: #666; text-align: center; margin: 25px 0 15px; }
+        .logo span { color: var(--blue-main); }
+        .content-area { padding: 0 50px; }
+        .table-custom { border-color: var(--border-clr); }
+        .table-custom th { background: var(--blue-main) !important; color: #fff; border: 1px solid var(--blue-main); padding: 5px 10px; }
+        .table-custom td { border-color: var(--border-clr); padding: 5px 10px; }
+        .bg-group{background: linear-gradient(90deg,#eef5fd,#e3effc); color:#0b4fa2; font-weight:700;}
+
+        /* .bg-group { background-color: var(--soft-bg) !important; font-weight: 700; }
+         */
+        .section-title { color: var(--blue-main); font-weight: 700; border-top: 1px solid var(--border-clr); padding-top: 10px; margin-top: 15px; margin-bottom: 5px; }
+        .lbl-col { width: 125px; }
+        .lbl-col-short { width: 180px; }
+        .ket-row{display:flex;margin-bottom:4px}
+        .ket-lbl{width:100px;font-weight:700}
+        .ket-col{width:12px;text-align:center}
+        .ket-val{flex:1}
+        @media print { body { background: none; padding: 0; } .inv-card { box-shadow: none; width: 100%; } .no-print { display: none; } }
+    </style>
+</head>
+
+    <div class="text-center mb-3 no-print">
+        <button class="btn btn-primary fw-bold px-5" onclick="window.print()">Preview PDF</button>
+    </div>
+
+    <div class="inv-card overflow-hidden">
+        <div class="top-bar"></div>
+        <div class="ribbon shadow-sm">Tagihan Baru</div>
+
+        <div class="logo">fingerspot<span>.io</span></div>
+
+        <div class="content-area">
+            <div class="row g-0 mb-3">
+                <div class="col-6">
+                    <div class="d-flex"><div style="width:55px" class="fw-bold">Nama</div><div class="px-1">:</div><div>Test Aprilla 5</div></div>
+                    <div class="d-flex"><div style="width:55px" class="fw-bold">Alamat</div><div class="px-1">:</div><div>Jl. Dewantara No.356, Yogyakarta</div></div>
+                </div>
+                <div class="col-6 ps-5">
+                    <div class="d-flex"><div style="width:100px" class="fw-bold">Tanggal</div><div class="px-1">:</div><div>26 January 2026</div></div>
+                    <div class="d-flex"><div style="width:100px" class="fw-bold">Nomor Tagihan</div><div class="px-1">:</div><div>#45883</div></div>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-custom mb-3">
+                <thead>
+                    <tr class="text-center align-middle">
+                        <th class="text-center">Deskripsi</th>
+                        <th style="width:60px">Qty</th>
+                        <th style="width:110px">@ Harga</th>
+                        <th style="width:110px">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-group"><td colspan="4" class="text-start">Paket Layanan</td></tr>
+                    <tr class="align-middle">
+                        <td class="">&bull; Paket Perangkat Absensi (Starter)</td>
+                        <td class="text-center">1</td>
+                        <td class="text-end px-3">135.000</td>
+                        <td class="text-end px-3">135.000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row g-0 mt-4">
+                <div class="col-7">
+                    <div class="fw-bold mb-1" style="font-size: 13px;">Metode Pembayaran</div>
+                    <div class="d-flex align-items-center">
+                        <span>Nomor Virtual Account</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" style="height:14px; margin-left:10px;">
+                    </div>
+                    <div class="fw-bold mt-1" style="font-size: 16px; letter-spacing: 0.5px;">1401000000037265</div>
+                </div>
+                <div class="col-5">
+                    <table class="w-100" style="border-collapse: collapse;">
+                        <tr class="fw-bold">
+                            <td class="py-1">SUBTOTAL</td>
+                            <td class="text-end py-1">135.000</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0">DPP</td>
+                            <td class="text-end py-0">121.622</td>
+                        </tr>
+                        <tr>
+                            <td class="py-0">PPn 11%</td>
+                            <td class="text-end py-0">13.378</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="py-1"><div style="border-top: 1px solid var(--border-clr); margin: 4px 0;"></div></td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td class="py-0">TOTAL TAGIHAN</td>
+                            <td class="text-end py-0">135.000</td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td class="py-0" style="line-height: 1.1; width: 65%;">TAGIHAN YANG PERLU DIBAYAR</td>
+                            <td class="text-end py-0" style="vertical-align: bottom;">135.000</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-title">Keterangan</div>
+                <div class="ket-row">
+                    <div class="ket-lbl">Kode Referensi</div><div class="ket-col">:</div>
+                    <div class="ket-val fw-bold text-uppercase">APRIL - APRILLA QA SOLO - CO</div>
+                </div>
+                <div class="ket-row">
+                    <div class="ket-lbl"></div><div class="ket-col"></div>
+                    <div class="ket-val">Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</div>
+                </div>
+                <div class="ket-row">
+                    <div class="ket-lbl">Jumlah Hari</div><div class="ket-col">:</div>
+                    <div class="ket-val">54 Hari</div>
+                </div>
+                <div class="ket-row">
+                    <div class="ket-lbl">Jatuh Tempo</div><div class="ket-col">:</div>
+                    <div class="ket-val">2026-03-21</div>
+                </div>
+                <div class="ket-row">
+                    <div class="ket-lbl">Catatan</div><div class="ket-col">:</div>
+                    <div class="ket-val">
+                        Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.
+                    </div>
+                </div>
+
+
+            <!-- <div class="section-title">Keterangan</div>
+            <div class="d-flex"><div class="lbl-col">Kode Referensi</div><div class="px-1">:</div><div class="flex-fill fw-bold text-uppercase">APRIL - Aprilla QA Solo - CO</div></div>
+            <div class="d-flex"><div class="lbl-col"></div><div class="px-1"></div><div class="flex-fill">Fingerspot Surabaya Barat - Pakuwon Trade Center (PTC)</div></div>
+            <div class="d-flex"><div class="lbl-col">Jumlah Hari</div><div class="px-1">:</div><div class="flex-fill">54 Hari</div></div>
+            <div class="d-flex"><div class="lbl-col">Jatuh Tempo</div><div class="px-1">:</div><div class="flex-fill">2026-03-21</div></div>
+            <div class="d-flex"><div class="lbl-col">Catatan</div><div class="px-1">:</div><div class="flex-fill">Berikut ini adalah invoice untuk akun yang melakukan penambahan kuota paket atau add-on sebelum masa jatuh tempo.</div></div> -->
+
+            <div class="section-title">Informasi layanan yang Anda miliki</div>
+            <div class="d-flex"><div class="lbl-col-short fw-bold">&bull; Bonus</div><div class="px-1">:</div><div class="flex-fill">Aplikasi Mobile Owner(1), Fitur SOS(1)</div></div>
+            <div class="d-flex"><div class="lbl-col-short fw-bold">&bull; Paket Perangkat Absensi (Starter)</div><div class="px-1">:</div><div class="flex-fill">1, Kuota Karyawan(100)</div></div>
+        </div>
+    </div>
+
+</body>
+</html>
