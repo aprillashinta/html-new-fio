@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Fingerspot - UX Improved</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --brand-blue: #5f9fd6;
+            --brand-dark: #0b4fa2;
+            --bg-soft: #f0f7ff;
+            --border-color: #c9def3;
+            --grid-line: #9dc3e6;
+            --group-bg: #e3effc;
+            --text-dark: #222;
+            --text-grey: #444;
+            --tax-color: #198754;
+            --tax-bg: #e8f5e9;
+        }
+
+        body {
+            background: #333;
+            font-family: Arial, sans-serif;
+            font-size: 11.5px;
+            line-height: 1.4;
+            padding: 30px 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color: var(--text-dark);
+        }
+
+        .inv-card {
+            width: 210mm;
+            min-height: 297mm;
+            background: #fff;
+            margin: auto;
+            position: relative;
+            box-shadow: 0 0 25px rgba(0, 0, 0, .6);
+            overflow: hidden;
+        }
+
+        .content { padding: 10mm 18mm 55mm; }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .inv-card { box-shadow: none; width: 100%; height: 100%; margin: 0; border: none; }
+            .no-print { display: none !important; }
+        }
+
+        .top-bar { height: 8px; background: var(--brand-blue); }
+
+        .ribbon {
+            position: absolute; top: 30px; right: -25px; width: 170px;
+            background: var(--brand-dark); color: #fff;
+            font-weight: 700; font-size: 11px; text-align: center;
+            padding: 6px 0; transform: rotate(35deg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+            letter-spacing: 1px; text-transform: uppercase; z-index: 10;
+        }
+
+        .header-line {
+            border-bottom: 2px solid var(--brand-blue);
+            margin-top: 15px; margin-bottom: 25px; position: relative;
+        }
+        .header-line::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 100%;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background-color: var(--tax-bg); color: var(--tax-color);
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.3px;
+            padding: 6px 10px; border-radius: 6px;
+            border: 1px solid var(--tax-color);
+            width: 100%; justify-content: center; margin-top: 15px;
+        }
+
+        .tbl-match {
+            width: 100%; border-collapse: collapse;
+            margin-bottom: 20px; border: 1px solid var(--grid-line);
+        }
+        .tbl-match th {
+            background-color: var(--brand-blue) !important; color: #fff;
+            font-weight: 700; text-align: center;
+            padding: 8px; font-size: 11.5px;
+            border-right: 1px solid rgba(255,255,255,0.4); 
+            border-bottom: 1px solid var(--grid-line);
+        }
+        .tbl-match th:last-child { border-right: none; }
+        .tbl-match td {
+            padding: 7px 10px;
+            border-left: 1px solid var(--grid-line);
+            border-right: 1px solid var(--grid-line);
+            border-top: none; border-bottom: none;
+            vertical-align: middle; color: var(--text-dark);
+            font-size: 11.5px;
+        }
+        .tbl-match tr:last-child td { border-bottom: 1px solid var(--grid-line); }
+        .row-group td {
+            background-color: var(--group-bg) !important;
+            font-weight: 700; color: #000;
+            border: 1px solid var(--grid-line) !important; 
+            padding-top: 6px; padding-bottom: 6px;
+            text-align: left !important;
+        }
+
+        .col-qty { width: 60px; text-align: center !important; }   
+        .col-price { width: 120px; text-align: center !important; } 
+        .col-total { width: 130px; text-align: right !important; }
+        .val-center { text-align: center !important; } 
+        .val-right { text-align: right !important; }
+
+        .tax-box {
+            background: #fff; border: 1px dashed #999;
+            padding: 8px 10px; border-radius: 6px; margin-top: 8px; font-size: 10.5px;
+        }
+        .tax-box-title {
+            font-weight: 700; color: var(--tax-color);
+            margin-bottom: 4px; display: flex; align-items: center; gap: 5px; font-size: 10.5px;
+        }
+
+        .inv-footer {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: var(--bg-soft); border-top: 1px solid var(--border-color); padding: 15px 25px 0;
+        }
+        .ft-bar { height: 6px; background: var(--brand-blue); margin-top: 15px; }
+        .ft-link { color: var(--brand-dark); text-decoration: none; font-weight: 600; }
+
+        .txt-label { font-size: 11.5px; color: #444; min-width: 105px; font-weight: 600; }
+        .txt-val { font-size: 11.5px; color: #222; font-weight: 600; }
+        .txt-header-client { font-size: 14px; color: #000; font-weight: 700; }
+
+        .tbl-summary { width: 100%; border-collapse: collapse; }
+        .tbl-summary td { font-size: 11.5px; padding: 3px 0; }
+        
+        .row-total-sub {
+            font-weight: 700; color: #222;
+            border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; background: #fafafa;
+        }
+        .row-grand-total td {
+            font-size: 13px; font-weight: 700; color: #000;
+            border-top: 2px solid var(--brand-blue); padding-top: 8px;
+        }
+        .detail-label { width: 135px; font-weight: 700; color: #222; }
+    </style>
+</head>
+<body>
+
+    <div class="text-center mb-3 no-print">
+        <button class="btn btn-sm btn-light fw-bold px-4 shadow-sm" onclick="window.print()">🖨 Print PDF</button>
+    </div>
+
+    <div class="inv-card">
+        <div class="top-bar"></div>
+        <div class="ribbon">Tagihan Baru</div>
+
+        <div class="content">
+            <div class="text-center mt-2">
+                <img src="../src/logo-fio.png" alt="Fingerspot.io" style="height:48px">
+            </div>
+
+            <div class="header-line"></div>
+
+            <div class="row mb-4">
+                <div class="col-7">
+                    <div class="txt-header-client">PT Perkebunan Nusantara IV Regional V</div>
+                    <div class="text-secondary mt-1" style="font-size:11px; line-height:1.3; max-width:90%">
+                        Jl. Slt. Abdurrahman No.11, Sungai Bangkong, Kec. Pontianak Kota, Kota Pontianak, Kalimantan Barat
+                    </div>
+
+                    <div class="tax-box">
+                        <div class="tax-box-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/><path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/></svg>
+                            Data Faktur Pajak
+                        </div>
+                        <div class="d-flex mb-0"><div style="min-width:70px; font-size:10.5px; color:#555">NPWP/NIK</div><div class="px-1">:</div><div class="txt-val">01.234.567.8-901.000</div></div>
+                        <div class="d-flex mb-0"><div style="min-width:70px; font-size:10.5px; color:#555">Nama</div><div class="px-1">:</div><div class="txt-val">PT Perkebunan Nusantara IV</div></div>
+                        <div class="d-flex mb-0"><div style="min-width:70px; font-size:10.5px; color:#555">Alamat</div><div class="px-1">:</div><div class="text-dark" style="font-size:11px">Jl. Slt. Abdurrahman No.11</div></div>
+                    </div>
+                </div>
+
+                <div class="col-5 ps-4 border-start border-light d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex mb-1 align-items-start"><div class="txt-label">No. Tagihan</div><div class="px-1">:</div><div class="fw-bold text-dark">#46042</div></div>
+                        <div class="d-flex mb-1 align-items-start"><div class="txt-label">Tanggal</div><div class="px-1">:</div><div>28 January 2026</div></div>
+                        <div class="d-flex mb-1 align-items-start"><div class="txt-label">Jatuh Tempo</div><div class="px-1">:</div><div class="fw-bold text-dark">2027-02-12</div></div>
+                        <div class="d-flex mt-1 align-items-start">
+                            <div class="txt-label">Kode Referensi</div><div class="px-1">:</div>
+                            <div style="font-size:11.5px; font-weight:700; color:#333; line-height:1.4">APRIL - Aprilla QA Solo<br><span style="font-weight:400">Fingerspot Surabaya</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-pill shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+                        Termasuk Faktur Pajak
+                    </div>
+                </div>
+            </div>
+
+            <table class="tbl-match">
+                <thead>
+                    <tr>
+                        <th class="text-center">Deskripsi</th><th class="col-qty">Qty</th><th class="col-price">@ Harga</th><th class="col-total">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-group"><td colspan="4">Paket Layanan</td></tr>
+                    <tr>
+                        <td class="ps-3">&bull; Paket Perangkat Absensi (Prime)</td>
+                        <td class="val-center">83</td>
+                        <td class="val-center">500.000</td>
+                        <td class="val-right fw-bold">41.500.000</td>
+                    </tr>
+                    <tr class="row-group"><td colspan="4">Add-on</td></tr>
+                    <tr>
+                        <td class="ps-3">&bull; Aplikasi Mobile Owner</td>
+                        <td class="val-center">1</td>
+                        <td class="val-center">152.500</td>
+                        <td class="val-right fw-bold">152.500</td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3">&bull; API SDK - Perangkat Absensi</td>
+                        <td class="val-center">4</td>
+                        <td class="val-center">291.250</td>
+                        <td class="val-right fw-bold">1.165.000</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row g-0 mt-3">
+                <div class="col-7 pe-5">
+                    <div class="fw-bold text-secondary small mb-1">METODE PEMBAYARAN</div>
+                    <div class="d-flex align-items-center p-2 border rounded bg-light mb-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" height="20" class="me-3 ms-1">
+                        <div><div class="small text-muted">Mandiri Virtual Account</div><div class="fw-bold fs-6 text-dark" style="letter-spacing:0.5px">70012 2491 0874 0413</div></div>
+                    </div>
+                    <div class="alert alert-light border border-secondary border-opacity-25 p-2 small text-secondary fst-italic mt-3" style="font-size:10.5px">
+                        <strong>Catatan Pajak:</strong><br>Dokumen e-Faktur akan diproses setelah pembayaran diterima dan akan dikirimkan ke email terdaftar atau dapat diunduh melalui panel pelanggan.
+                    </div>
+                </div>
+
+                <div class="col-5">
+                    <table class="tbl-summary">
+                        <tr><td class="text-secondary">Subtotal</td><td class="text-end">42.817.500</td></tr>
+                        <tr><td class="text-secondary">DPP</td><td class="text-end text-secondary">38.574.324</td></tr>
+                        <tr><td class="text-secondary pb-2">PPn 11%</td><td class="text-end text-secondary pb-2">4.243.176</td></tr>
+                        
+                        <tr class="row-total-sub">
+                            <td class="py-1">TOTAL</td>
+                            <td class="text-end py-1">42.817.500</td>
+                        </tr>
+
+                        <tr><td class="text-secondary pt-2">Biaya Transaksi</td><td class="text-end text-secondary pt-2">4.500</td></tr>
+                        <tr><td class="fw-bold text-dark pb-2">Potongan Saldo</td><td class="text-end fw-bold text-dark pb-2">- 54.795</td></tr>
+                        
+                        <tr class="row-grand-total">
+                            <td class="py-2" style="width:50%">TOTAL BAYAR</td>
+                            <td class="text-end py-2">Rp 42.767.205</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-2 border-top border-light">
+                <div class="fw-bold text-secondary small mb-1 text-uppercase">DETAIL LAYANAN AKTIF</div>
+                <div class="small text-secondary" style="font-size:11px">
+                    <div class="d-flex mb-1">
+                        <div class="detail-label">&bull; Bonus</div><div class="px-1">:</div>
+                        <div class="col">Aplikasi Mobile Owner (1), Fitur SOS (1)</div>
+                    </div>
+                    <div class="d-flex mb-1">
+                        <div class="detail-label">&bull; Paket Absensi (Prime)</div><div class="px-1">:</div>
+                        <div class="col">Unit(83), Absensi GPS(2), Notifikasi(2), Izin via Ponsel(2), Kuota Karyawan(300)</div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="detail-label">&bull; Add-On</div><div class="px-1">:</div>
+                        <div class="col">Aplikasi Mobile Owner, API SDK, Kuota Karyawan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="inv-footer">
+            <div class="row align-items-center">
+                <div class="col-7">
+                    <h6 class="fw-bold text-primary mb-1" style="font-size:13px; color:var(--brand-blue)!important">Fingerspot.io</h6>
+                    <div class="text-muted small" style="font-size:10px; line-height:1.3">Gedung Fingerspot, Jl. Kemang Raya No. 12<br>Jakarta Selatan, Indonesia 12730</div>
+                </div>
+                <div class="col-5 text-end">
+                    <div class="small fw-bold text-muted mb-1">Butuh Bantuan?</div>
+                    <div style="font-size:11px">📧 <a href="mailto:support@fingerspot.io" class="ft-link">support@fingerspot.io</a></div>
+                </div>
+            </div>
+            <div class="row mt-3"><div class="col-12 text-center text-muted" style="font-size:9px">Printed at 2026-01-28 14:42:30 &bull; Page 1/1</div></div>
+            <div class="ft-bar"></div>
+        </div>
+    </div>
+</body>
+</html>
